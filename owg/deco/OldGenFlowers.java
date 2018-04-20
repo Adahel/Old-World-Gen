@@ -2,41 +2,43 @@ package owg.deco;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockBush;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.WorldGenerator;
+import owg.OWGGenHelper;
 
 public class OldGenFlowers extends WorldGenerator
 {
-    private Block plantBlockId;
-    
-    public OldGenFlowers(Block b)
+    private BlockBush plantBlockId;
+
+    public OldGenFlowers(BlockBush b)
     {
-        plantBlockId = b;
+        this.plantBlockId = b;
     }
 
+    @Override
     public boolean generate(World world, Random random, int i, int j, int k)
     {
-        for(int l = 0; l < 64; l++)
+        for (int l = 0; l < 64; l++)
         {
             int i1 = (i + random.nextInt(8)) - random.nextInt(8);
             int j1 = (j + random.nextInt(4)) - random.nextInt(4);
             int k1 = (k + random.nextInt(8)) - random.nextInt(8);
-            
-            if(plantBlockId == Blocks.red_mushroom || plantBlockId == Blocks.brown_mushroom)
+
+            if (this.plantBlockId == Blocks.red_mushroom || this.plantBlockId == Blocks.brown_mushroom)
             {
-	            if(world.isAirBlock(i1, j1, k1) && canMushroomStay(world, i1, j1, k1))
-	            {
-	                world.setBlock(i1, j1, k1, plantBlockId);
-	            }
+                if (OWGGenHelper.isAirBlock(world, i1, j1, k1) && this.canMushroomStay(world, i1, j1, k1))
+                {
+                    OWGGenHelper.setBlock(world, i1, j1, k1, this.plantBlockId);
+                }
             }
             else
             {
-	            if(world.isAirBlock(i1, j1, k1) && plantBlockId.canBlockStay(world, i1, j1, k1))
-	            {
-	                world.setBlock(i1, j1, k1, plantBlockId);
-	            }
+                if (OWGGenHelper.isAirBlock(world, i1, j1, k1) && OWGGenHelper.canBlockStay(world, i1, j1, k1, this.plantBlockId))
+                {
+                    OWGGenHelper.setBlock(world, i1, j1, k1, this.plantBlockId);
+                }
             }
         }
 
@@ -45,13 +47,13 @@ public class OldGenFlowers extends WorldGenerator
 
     public boolean canMushroomStay(World world, int i, int j, int k)
     {
-        if(j < 0 || j >= 128)
+        if (j < 0 || j >= 128)
         {
             return false;
-        } 
+        }
         else
         {
-            return world.getFullBlockLightValue(i, j, k) < 13 && world.getBlock(i, j - 1, k).isOpaqueCube();
+            return world.getLight(new BlockPos(i, j, k)) < 13 && OWGGenHelper.getBlock(world, i, j - 1, k).isOpaqueCube();
         }
     }
 }

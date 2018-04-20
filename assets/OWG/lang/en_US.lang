@@ -16,6 +16,7 @@ owg.setting.theme=Theme
 owg.setting.type=Type
 owg.setting.layer=Layer
 owg.setting.dungeon=Dungeons
+owg.setting.ravine=Ravines
 owg.setting.end=End portal only
 
 owg.biomes.biomes=Biomes
