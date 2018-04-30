@@ -1,34 +1,44 @@
 package owg.biomes;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityWolf;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.ColorizerFoliage;
-import net.minecraft.world.ColorizerGrass;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BiomeClassic extends BiomeGenBase
+public class BiomeClassic extends BiomeList
 {
-    public BiomeClassic(int par1)
+    public BiomeClassic(int id)
     {
-        super(par1);
-        spawnableCreatureList.add(new SpawnListEntry(EntityWolf.class, 2, 1, 1));
-        spawnableCreatureList.add(new SpawnListEntry(EntityOcelot.class, 2, 1, 1));
-        spawnableCreatureList.add(new SpawnListEntry(EntityHorse.class, 2, 1, 1));
+        super(id);
+        this.spawnableCreatureList.add(new SpawnListEntry(EntityWolf.class, 2, 1, 1));
+        this.spawnableCreatureList.add(new SpawnListEntry(EntityOcelot.class, 2, 1, 1));
+        this.spawnableCreatureList.add(new SpawnListEntry(EntityHorse.class, 2, 1, 1));
     }
-    
+
+    @Override
     @SideOnly(Side.CLIENT)
-    public int getBiomeGrassColor(int a, int b, int c)
+    public int getGrassColorAtPos(BlockPos pos)
     {
         return 0xABFF67;
     }
-    
+
+    @Override
     @SideOnly(Side.CLIENT)
-    public int getBiomeFoliageColor(int a, int b, int c)
+    public int getFoliageColorAtPos(BlockPos pos)
     {
         return 0x4FFF2B;
-    }  
+    }
+
+    @Override
+    public BiomeList createMutatedBiome(int p_180277_1_)
+    {
+        BiomeClassic biomeClassic = new BiomeClassic(p_180277_1_);
+        biomeClassic.setBiomeName("Ice Classic");
+        biomeClassic.setColor(353825);
+        biomeClassic.setEnableSnow();
+        biomeClassic.setTemperatureRainfall(0.0F, 0.5F);
+        return biomeClassic;
+    }
 }

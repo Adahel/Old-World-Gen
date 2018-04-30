@@ -3,26 +3,23 @@ package owg.generator;
 import java.util.List;
 import java.util.Random;
 
-import owg.data.DungeonLoot;
-import owg.deco.DecoIndevHouse;
-import owg.deco.DecoSkyDungeon;
-import owg.deco.OldGenDungeons;
-import owg.deco.OldGenMinable;
-import owg.noise.NoiseOctavesIndev;
-import owg.noise.NoiseOctavesInfdev;
-import owg.noise.NoisePerlinIndev;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockSand;
+import net.minecraft.block.BlockFalling;
+import net.minecraft.block.BlockFlower;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.IProgressUpdate;
-import net.minecraft.world.ChunkPosition;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.SpawnerAnimals;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import net.minecraft.world.gen.GeneratorBushFeature;
 import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.MapGenCaves;
 import net.minecraft.world.gen.feature.WorldGenFlowers;
@@ -32,6 +29,15 @@ import net.minecraft.world.gen.structure.MapGenMineshaft;
 import net.minecraft.world.gen.structure.MapGenStronghold;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
+import owg.data.DungeonLoot;
+import owg.deco.DecoIndevHouse;
+import owg.deco.DecoSkyDungeon;
+import owg.deco.OldGenDungeons;
+import owg.deco.OldGenMinable;
+import owg.noise.NoiseOctavesIndev;
+import owg.noise.NoiseOctavesInfdev;
+import owg.noise.NoisePerlinIndev;
+import owg.world.ManagerOWGHell;
 
 public class ChunkGeneratorIndev implements IChunkProvider
 {
@@ -43,27 +49,16 @@ public class ChunkGeneratorIndev implements IChunkProvider
     public NoiseOctavesIndev noiseGen5;
     public NoiseOctavesIndev noiseGen6;
     public NoiseOctavesInfdev mobSpawnerNoise;
-	public NoiseOctavesIndev noiseGen10;
-	public NoiseOctavesIndev noiseGen11;
-	public NoisePerlinIndev perlinGen1;
+    public NoiseOctavesIndev noiseGen10;
+    public NoiseOctavesIndev noiseGen11;
+    public NoisePerlinIndev perlinGen1;
 
     private World worldObj;
     private final boolean mapFeaturesEnabled;
-    private double[] noiseArray;
-    private double[] stoneNoise = new double[256];
     private MapGenBase caveGenerator = new MapGenCaves();
     private MapGenStronghold strongholdGenerator = new MapGenStronghold();
     private MapGenMineshaft mineshaftGenerator = new MapGenMineshaft();
     private BiomeGenBase[] biomesForGeneration;
-
-    private double[] noise1;
-    private double[] noise2;
-    private double[] noise3;
-    private double[] noise5;
-    private double[] noise6;
-
-    private float[] parabolicField;
-    private int[][] field_73219_j = new int[32][32];
 
     private boolean themeHELL = false;
     private boolean themePARADISE = false;
@@ -71,22 +66,20 @@ public class ChunkGeneratorIndev implements IChunkProvider
     private boolean themeSNOW = false;
     private boolean typeIsland = false;
     private boolean typeFloating = false;
-    private boolean typeInland = false;
-    private boolean typeFinite = false;
     private int size = 1;
     private double width = 1;
     private int layers = 1;
     private int dungeons = 0;
-    private boolean spawnSet = false;
     private int dungeonRate = 15;
+    private final ManagerOWGHell chunkManager;
 
-    public ChunkGeneratorIndev(World par1World, long par2, boolean par4, int type, int theme, int s, int l, int d)
+    public ChunkGeneratorIndev(World worldIn, long l, boolean isEnabled, int type, int theme, int size, int layers, int dungeons)
     {
-        this.worldObj = par1World;
-		worldObj.getWorldInfo().setSpawnPosition(0, 256, 0);
-		
-        this.mapFeaturesEnabled = par4;
-        this.rand = new Random(par2);
+        this.worldObj = worldIn;
+        this.worldObj.getWorldInfo().setSpawn(new BlockPos(0, 256, 0));
+
+        this.mapFeaturesEnabled = isEnabled;
+        this.rand = new Random(l);
         this.noiseGen1 = new NoiseOctavesIndev(this.rand, 16);
         this.noiseGen2 = new NoiseOctavesIndev(this.rand, 16);
         this.noiseGen3 = new NoiseOctavesIndev(this.rand, 8);
@@ -96,708 +89,807 @@ public class ChunkGeneratorIndev implements IChunkProvider
         this.mobSpawnerNoise = new NoiseOctavesInfdev(this.rand, 8);
         this.noiseGen10 = new NoiseOctavesIndev(this.rand, 6);
         this.noiseGen11 = new NoiseOctavesIndev(this.rand, 8);
-		this.perlinGen1 = new NoisePerlinIndev(this.rand);
-		
-		if(theme == 2) { themeHELL = true; }
-		if(theme == 3) { themePARADISE = true; }
-		if(theme == 4) { themeWOODS = true; }
-		if(theme == 5) { themeSNOW = true; }
-		if(type == 1) { typeIsland = true; }
-		if(type == 2) { typeFloating = true; }
-		if(type == 3) { typeInland = true; }
-		if(type == 4) { typeFinite = true; } 
-		
-		dungeons = d;
-		DungeonLoot.init(par2);
+        this.perlinGen1 = new NoisePerlinIndev(this.rand);
 
-		size = s;
-		if(typeFloating)
-		{
-			if(s == 1) { size = 6; width = 1.2D; dungeonRate = 8; }
-			if(s == 2) { size = 12; width = 2D; dungeonRate = 10; }
-			if(s == 3) { size = 18; width = 3D; dungeonRate = 12; }
-		}
-		if(typeIsland)
-		{
-			if(s == 1) { size = 3; }
-			if(s == 2) { size = 5; }
-			if(s == 3) { size = 7; }
-		}
-		layers = l;
-    }
-
-	public void generateSkylands(int par1, int par2, Block[] blocks)
-	{
-		if(worldObj.getWorldInfo().getSpawnX() != 0)
-		{
-			worldObj.getWorldInfo().setSpawnPosition(0, 256, 0);
-		}
-		
-		int seaLevel = 64;
-		int i = par1 << 4;
-		int j = par2 << 4;
-		int jj = 0;
-		int lx = 0; int lz = 0;
-		
-		if(par1 > -size && par1 < size && par2 > -size && par2 < size)
-		{
-			for(int layer = 0; layer < layers; layer++)
-			{
-				jj = 0;
-				for (int k = i; k < i + 16; k++)
-				{
-					for (int m = j; m < j + 16; m++)
-					{
-						float f2 = (float)this.noiseGen5.a((k + (layer * 2000F)) / 4.0F, (m + (layer * 2000F)) / 4.0F);
-						int i2 = 35 + (layer * 45) + ((int) f2);
-						
-						if(i2 < 1) 
-						{ 
-							i2 = 1; 
-						}
-		
-						if ((float)this.noiseGen5.a(k, m) < 0.0F)
-						{
-							i2 = i2 / 2 << 1;
-							if ((float)this.noiseGen5.a(k / 5, m / 5) < 0.0F)
-							{
-								i2++;
-							}	
-						}
-						
-						int thickness = -25;
-						int less = (int) Math.floor(Math.sqrt((k-0)*(k-0) + (m-0)*(m-0)) / width);
-						if(less > 150) { less = 150; }
-						thickness += less;
-						
-						double ovar32 = clamp(getNoise(8, k + (layer * 2000), m + (layer * 2000), 50, 50, 0));
-						int var77 = (int) (ovar32 * (seaLevel / 2)) + 20 + (layer * 45) + thickness;
-						
-						boolean flagSand = noiseGen3.a(k + (layer * 2000F), m + (layer * 2000F)) > 52D + (less / 3D); 
-						boolean flagGravel = noiseGen11.a(k + (layer * 2000F), m + (layer * 2000F)) > 62D + (less / 3D); 
-						
-						for (int i3 = 0; i3 < 256; i3++)
-						{
-							jj++;
-							if(i3 == i2)
-							{
-								if(flagGravel)
-								{
-									blocks[jj] = Blocks.gravel;
-								}
-								else if(flagSand)
-								{
-									blocks[jj] = Blocks.sand;
-								}
-								else if(i3 > var77)
-								{
-									blocks[jj] = Blocks.stone;
-								}
-							}
-							else if (i3 > var77 && i3 < i2)
-							{
-								blocks[jj] = Blocks.stone;
-							}
-						}
-					}	
-				}
-			}
-		}
-	}
-	
-	public void generateSurface(int par1, int par2, Block[] blocks)
-	{
-		int jj = 0;
-		
-		for (int x = 0; x < 16; x++)
-		{
-			for (int z = 0; z < 16; z++)
-			{
-				int t = -1;
-				boolean air = true;
-				
-				jj+=256;
-				for (int y = 255; y > -1; y--)
-				{
-					Block b = Blocks.air;
-					
-					int l1 = (x * 16 + z) * 256 + y;
-					if(blocks[l1] == null)
-					{
-						b = Blocks.air;
-						t = -1;
-					}
-					else if(blocks[l1] == Blocks.stone)
-					{
-						t++;
-						if(t == 0 && air)
-						{
-							b = Blocks.grass;
-						}
-						else if(t < 3)
-						{
-							b = Blocks.dirt;
-						}
-						else
-						{
-							b = Blocks.stone;
-						}
-						air = false;
-					}
-					else
-					{
-						t++;
-						b = blocks[l1];
-					}
-					jj--;
-					blocks[jj] = b;
-				}
-				jj+=256;
-			}
-		}
-	}
-	
-	public void generateTerrain(int par1, int par2, Block[] ba, byte[] bm)
-	{		
-		int height = 128;
-		int seaLevel = 64;
-		int i = par1 << 4;
-		int j = par2 << 4;
-		int jj = 0;
-		int lx = 0; int lz = 0;
-
-		for (int k = i; k < i + 16; k++)
-		{
-			for (int m = j; m < j + 16; m++)
-			{
-				int n = k / 1024;
-				int i1 = m / 1024;
-				
-				int i2 = 64;
-				if(typeIsland)
-				{
-					float f2 = (float)this.noiseGen5.a(k / 4.0F, m / 4.0F);
-					i2 = 74 - ((int) Math.floor(Math.sqrt((0D-k)*(0D-k) + (0D-m)*(0D-m)) / (double) size));
-					if(i2 < 50) { i2 = 50; }
-					i2 += ((int) f2);
-				}
-				else
-				{
-					float f1 = (float)(this.noiseGen1.a(k / 0.03125F, 0.0D, m / 0.03125F) - this.noiseGen2.a(k / 0.015625F, 0.0D, m / 0.015625F)) / 512.0F / 4.0F;
-					float f2 = (float)this.noiseGen5.a(k / 4.0F, m / 4.0F);
-					float f3 = (float)this.noiseGen6.a(k / 8.0F, m / 8.0F) / 8.0F;
-					f2 = f2 > 0.0F ? (float)(this.noiseGen3.a(k * 0.2571428F * 2.0F, m * 0.2571428F * 2.0F) * f3 / 4.0D) : (float)(this.noiseGen4.a(k * 0.2571428F, m * 0.2571428F) * f3);
-					i2 = (int)(f1 + 64.0F + f2);
-				}
-				
-				if ((float)this.noiseGen5.a(k, m) < 0.0F)
-				{
-					i2 = i2 / 2 << 1;
-					if ((float)this.noiseGen5.a(k / 5, m / 5) < 0.0F)
-					{
-						i2++;
-					}	
-				}
-
-				//BEACH SETTINGS
-				boolean flagSand = noiseGen3.a(k, m) > 8D;
-				boolean flagGravel = noiseGen11.a(k, m) > 18D;
-				if(themePARADISE)
-				{ 
-					flagSand = noiseGen3.a(k, m) > -32D; 
-				}
-				else if(themeHELL || themeWOODS)
-				{ 
-					flagSand = noiseGen3.a(k, m) > -8D; 
-				}
-				
-				if(typeIsland)
-				{
-					flagSand = true;
-				}
-
-				//CREATE WORLD
-				for (int i3 = 0; i3 < 256; i3++)
-				{
-					Block i4 = Blocks.air;
-					int i4m = 0;
-					int beachHeight = seaLevel + 1;
-					if(themePARADISE){ beachHeight = seaLevel + 3; }
-					
-					//GENERATE BEDROCK
-					if(i3 == 0)
-					{
-						i4 = Blocks.bedrock;
-					}
-					
-					//GENERATE GRASS
-					else if ((i3 == i2) && i2 >= beachHeight) 
-					{
-						if(themeHELL)
-						{
-							i4 = Blocks.dirt;
-							i4m = 1;
-						}
-						else
-						{
-							i4 = Blocks.grass;
-						}	
-					}
-					
-					//BEACH GEN
-					else if (i3 == i2)
-					{
-						if(flagGravel)
-						{
-							i4 = Blocks.gravel;
-							if(themeHELL)
-							{
-								i4 = Blocks.grass;
-							}
-						}
-						else if(flagSand)
-						{
-							i4 = Blocks.sand;
-							if(themeHELL)
-							{
-								i4 = Blocks.grass;
-							}
-						}
-						else if (i2 > seaLevel - 1)
-						{
-							i4 = Blocks.grass;
-						}
-						else
-						{
-							i4 = Blocks.dirt;
-						}
-					}
-					
-					//GENERATE STONE
-					else if (i3 <= i2 - 2)
-					{
-						i4 = Blocks.stone;
-					}
-					
-					//GENERATE DIRT
-					else if (i3 < i2)
-					{
-						i4 = Blocks.dirt;
-						}
-	
-						//GENERATE LIQUIDS
-						else if (i3 <= 64 && !typeFloating)
-						{
-							if(themeHELL)
-							{
-								if (i3 == 64)
-								{
-									i4 = Blocks.flowing_lava;
-								}
-								else
-								{
-									i4 = Blocks.lava;
-								}
-							}
-							else
-							{
-								i4 = Blocks.water;
-							}	
-						}	
-				
-						rand.setSeed(n + i1 * 13871);
-						int i5 = (n << 10) + 128 + rand.nextInt(512);
-						int i6 = (i1 << 10) + 128 + rand.nextInt(512);
-						i5 = k - i5;
-						int i7 = m - i6;
-						if (i5 < 0)
-						{
-							i5 = -i5;
-						}	
-						if (i7 < 0)
-						{
-							i7 = -i7;
-						}
-						if (i7 > i5)
-						{
-							i5 = i7;
-						}	
-						if ((i5 = 127 - i5) == 255)
-						{
-							i5 = 1;
-						}	
-						if (i5 < i2)
-						{
-							i5 = i2;
-						}	
-						if ((i3 <= i5) && ((i4 == Blocks.air) || (i4 == Blocks.water) || (i4 == Blocks.lava)))
-						{
-							i4 = Blocks.brick_block;
-						} 
-						
-						ba[jj] = i4;
-						bm[jj] = (byte)i4m;
-						jj++;
-					}
-				}	
-			}
-	}
-	
-    private double clamp(double input)
-	{
-		if (input > 1.0D)
-		{
-			return 1.0D;
-		}
-		if (input < -1.0D)
-		{
-			return -1.0D;
-		}
-		return input;
-	}
-    
-	private double getNoise(int level, int x, int y, double xfact, double yfact, double zstart)
-	{
-		double output = 0;
-        for (double l = 1; l <= level*level; l *= 2)
+        if (theme == 2)
         {
-            output += perlinGen1.a((x / xfact) * l, (y / yfact) * l) / l;
+            this.themeHELL = true;
         }
-		return output; 
-	}
+        if (theme == 3)
+        {
+            this.themePARADISE = true;
+        }
+        if (theme == 4)
+        {
+            this.themeWOODS = true;
+        }
+        if (theme == 5)
+        {
+            this.themeSNOW = true;
+        }
+        if (type == 1)
+        {
+            this.typeIsland = true;
+        }
+        if (type == 2)
+        {
+            this.typeFloating = true;
+        }
+        if (type == 3)
+        {
+        }
+        if (type == 4)
+        {
+        }
 
-    public Chunk loadChunk(int par1, int par2)
-    {
-        return this.provideChunk(par1, par2);
+        this.dungeons = dungeons;
+        this.chunkManager = (ManagerOWGHell) this.worldObj.getWorldChunkManager();
+        DungeonLoot.init(l);
+
+        this.size = size;
+        if (this.typeFloating)
+        {
+            if (size == 1)
+            {
+                this.size = 6;
+                this.width = 1.2D;
+                this.dungeonRate = 8;
+            }
+            if (size == 2)
+            {
+                this.size = 12;
+                this.width = 2D;
+                this.dungeonRate = 10;
+            }
+            if (size == 3)
+            {
+                this.size = 18;
+                this.width = 3D;
+                this.dungeonRate = 12;
+            }
+        }
+        if (this.typeIsland)
+        {
+            if (size == 1)
+            {
+                this.size = 3;
+            }
+            if (size == 2)
+            {
+                this.size = 5;
+            }
+            if (size == 3)
+            {
+                this.size = 7;
+            }
+        }
+        this.layers = layers;
     }
 
+    public void generateSkylands(int i, int j, ChunkPrimer chunk)
+    {
+        if (this.worldObj.getWorldInfo().getSpawnX() != 0)
+        {
+            this.worldObj.getWorldInfo().setSpawn(new BlockPos(0, 256, 0));
+        }
+
+        int seaLevel = 64;
+        int x = i << 4;
+        int z = j << 4;
+        int jj = 0;
+        int lx = 0;
+        int lz = 0;
+
+        if (i > -this.size && i < this.size && j > -this.size && j < this.size)
+        {
+            for (int layer = 0; layer < this.layers; layer++)
+            {
+                jj = 0;
+                for (int k = x; k < x + 16; k++)
+                {
+                    for (int m = z; m < z + 16; m++)
+                    {
+                        float f2 = (float) this.noiseGen5.a((k + (layer * 2000F)) / 4.0F, (m + (layer * 2000F)) / 4.0F);
+                        int i2 = 35 + (layer * 45) + ((int) f2);
+
+                        if (i2 < 1)
+                        {
+                            i2 = 1;
+                        }
+
+                        if ((float) this.noiseGen5.a(k, m) < 0.0F)
+                        {
+                            i2 = i2 / 2 << 1;
+                            if ((float) this.noiseGen5.a(k / 5, m / 5) < 0.0F)
+                            {
+                                i2++;
+                            }
+                        }
+
+                        int thickness = -25;
+                        int less = (int) Math.floor(Math.sqrt((k - 0) * (k - 0) + (m - 0) * (m - 0)) / this.width);
+                        if (less > 150)
+                        {
+                            less = 150;
+                        }
+                        thickness += less;
+
+                        double ovar32 = this.clamp(this.getNoise(8, k + (layer * 2000), m + (layer * 2000), 50, 50, 0));
+                        int var77 = (int) (ovar32 * (seaLevel / 2)) + 20 + (layer * 45) + thickness;
+
+                        boolean flagSand = this.noiseGen3.a(k + (layer * 2000F), m + (layer * 2000F)) > 52D + (less / 3D);
+                        boolean flagGravel = this.noiseGen11.a(k + (layer * 2000F), m + (layer * 2000F)) > 62D + (less / 3D);
+
+                        for (int i3 = 0; i3 < 256; i3++)
+                        {
+                            jj++;
+                            if (i3 == i2)
+                            {
+                                if (flagGravel)
+                                {
+                                    chunk.setBlockState(jj, Blocks.gravel.getDefaultState());
+                                }
+                                else if (flagSand)
+                                {
+                                    chunk.setBlockState(jj, Blocks.sand.getDefaultState());
+                                }
+                                else if (i3 > var77)
+                                {
+                                    chunk.setBlockState(jj, Blocks.stone.getDefaultState());
+                                }
+                            }
+                            else if (i3 > var77 && i3 < i2)
+                            {
+                                chunk.setBlockState(jj, Blocks.stone.getDefaultState());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void generateSurface(int i, int j, ChunkPrimer chunk)
+    {
+        int jj = 0;
+
+        for (int x = 0; x < 16; x++)
+        {
+            for (int z = 0; z < 16; z++)
+            {
+                int t = -1;
+                boolean air = true;
+
+                jj += 256;
+                for (int y = 255; y > -1; y--)
+                {
+                    Block b = Blocks.air;
+
+                    IBlockState iblockstate2 = chunk.getBlockState(x, y, z);
+
+                    if (iblockstate2.getBlock().getMaterial() == Material.air)
+                    {
+                        t = -1;
+                    }
+                    else if (iblockstate2.getBlock() == Blocks.stone)
+                    {
+                        t++;
+                        if (t == 0 && air)
+                        {
+                            b = Blocks.grass;
+                        }
+                        else if (t < 3)
+                        {
+                            b = Blocks.dirt;
+                        }
+                        else
+                        {
+                            b = Blocks.stone;
+                        }
+                        air = false;
+                    }
+                    else
+                    {
+                        t++;
+                        b = iblockstate2.getBlock();
+                    }
+                    jj--;
+                    chunk.setBlockState(jj, b.getDefaultState());
+                }
+                jj += 256;
+            }
+        }
+    }
+
+    public void generateTerrain(int i, int j, ChunkPrimer chunk)
+    {
+        if (this.worldObj.getWorldInfo().getSpawnX() != 0)
+        {
+            this.worldObj.getWorldInfo().setSpawn(new BlockPos(0, 256, 0));
+        }
+
+        int height = 128;
+        int seaLevel = 64;
+        int x = i << 4;
+        int z = j << 4;
+        int jj = 0;
+        int lx = 0;
+        int lz = 0;
+
+        for (int k = x; k < x + 16; k++)
+        {
+            for (int m = z; m < z + 16; m++)
+            {
+                int n = k / 1024;
+                int i1 = m / 1024;
+
+                int i2 = 64;
+                if (this.typeIsland)
+                {
+                    float f2 = (float) this.noiseGen5.a(k / 4.0F, m / 4.0F);
+                    i2 = 74 - ((int) Math.floor(Math.sqrt((0D - k) * (0D - k) + (0D - m) * (0D - m)) / (double) this.size));
+                    if (i2 < 50)
+                    {
+                        i2 = 50;
+                    }
+                    i2 += ((int) f2);
+                }
+                else
+                {
+                    float f1 = (float) (this.noiseGen1.a(k / 0.03125F, 0.0D, m / 0.03125F) - this.noiseGen2.a(k / 0.015625F, 0.0D, m / 0.015625F)) / 512.0F
+                            / 4.0F;
+                    float f2 = (float) this.noiseGen5.a(k / 4.0F, m / 4.0F);
+                    float f3 = (float) this.noiseGen6.a(k / 8.0F, m / 8.0F) / 8.0F;
+                    f2 = f2 > 0.0F ? (float) (this.noiseGen3.a(k * 0.2571428F * 2.0F, m * 0.2571428F * 2.0F) * f3 / 4.0D)
+                            : (float) (this.noiseGen4.a(k * 0.2571428F, m * 0.2571428F) * f3);
+                    i2 = (int) (f1 + 64.0F + f2);
+                }
+
+                if ((float) this.noiseGen5.a(k, m) < 0.0F)
+                {
+                    i2 = i2 / 2 << 1;
+                    if ((float) this.noiseGen5.a(k / 5, m / 5) < 0.0F)
+                    {
+                        i2++;
+                    }
+                }
+
+                // BEACH SETTINGS
+                boolean flagSand = this.noiseGen3.a(k, m) > 8D;
+                boolean flagGravel = this.noiseGen11.a(k, m) > 18D;
+                if (this.themePARADISE)
+                {
+                    flagSand = this.noiseGen3.a(k, m) > -32D;
+                }
+                else if (this.themeHELL || this.themeWOODS)
+                {
+                    flagSand = this.noiseGen3.a(k, m) > -8D;
+                }
+
+                if (this.typeIsland)
+                {
+                    flagSand = true;
+                }
+
+                // CREATE WORLD
+                for (int i3 = 0; i3 < 256; i3++)
+                {
+                    Block i4 = Blocks.air;
+                    int i4m = 0;
+                    int beachHeight = seaLevel + 1;
+                    if (this.themePARADISE)
+                    {
+                        beachHeight = seaLevel + 3;
+                    }
+
+                    // GENERATE BEDROCK
+                    if (i3 == 0)
+                    {
+                        i4 = Blocks.bedrock;
+                    }
+
+                    // GENERATE GRASS
+                    else if ((i3 == i2) && i2 >= beachHeight)
+                    {
+                        if (this.themeHELL)
+                        {
+                            i4 = Blocks.dirt;
+                            i4m = 1;
+                        }
+                        else
+                        {
+                            i4 = Blocks.grass;
+                        }
+                    }
+
+                    // BEACH GEN
+                    else if (i3 == i2)
+                    {
+                        if (flagGravel)
+                        {
+                            i4 = Blocks.gravel;
+                            if (this.themeHELL)
+                            {
+                                i4 = Blocks.grass;
+                            }
+                        }
+                        else if (flagSand)
+                        {
+                            i4 = Blocks.sand;
+                            if (this.themeHELL)
+                            {
+                                i4 = Blocks.grass;
+                            }
+                        }
+                        else if (i2 > seaLevel - 1)
+                        {
+                            i4 = Blocks.grass;
+                        }
+                        else
+                        {
+                            i4 = Blocks.dirt;
+                        }
+                    }
+
+                    // GENERATE STONE
+                    else if (i3 <= i2 - 2)
+                    {
+                        i4 = Blocks.stone;
+                    }
+
+                    // GENERATE DIRT
+                    else if (i3 < i2)
+                    {
+                        i4 = Blocks.dirt;
+                    }
+
+                    // GENERATE LIQUIDS
+                    else if (i3 <= 64 && !this.typeFloating)
+                    {
+                        if (this.themeHELL)
+                        {
+                            if (i3 == 64)
+                            {
+                                i4 = Blocks.flowing_lava;
+                            }
+                            else
+                            {
+                                i4 = Blocks.lava;
+                            }
+                        }
+                        else
+                        {
+                            i4 = Blocks.water;
+                        }
+                    }
+
+                    this.rand.setSeed(n + i1 * 13871);
+                    int i5 = (n << 10) + 128 + this.rand.nextInt(512);
+                    int i6 = (i1 << 10) + 128 + this.rand.nextInt(512);
+                    i5 = k - i5;
+                    int i7 = m - i6;
+                    if (i5 < 0)
+                    {
+                        i5 = -i5;
+                    }
+                    if (i7 < 0)
+                    {
+                        i7 = -i7;
+                    }
+                    if (i7 > i5)
+                    {
+                        i5 = i7;
+                    }
+                    if ((i5 = 127 - i5) == 255)
+                    {
+                        i5 = 1;
+                    }
+                    if (i5 < i2)
+                    {
+                        i5 = i2;
+                    }
+                    if ((i3 <= i5) && ((i4 == Blocks.air) || (i4 == Blocks.water) || (i4 == Blocks.lava)))
+                    {
+                        i4 = Blocks.brick_block;
+                    }
+
+                    chunk.setBlockState(jj, i4.getDefaultState());
+                    jj++;
+                }
+            }
+        }
+    }
+
+    private double clamp(double input)
+    {
+        if (input > 1.0D)
+        {
+            return 1.0D;
+        }
+        if (input < -1.0D)
+        {
+            return -1.0D;
+        }
+        return input;
+    }
+
+    private double getNoise(int level, int x, int y, double xfact, double yfact, double zstart)
+    {
+        double output = 0;
+        for (double l = 1; l <= level * level; l *= 2)
+        {
+            output += this.perlinGen1.a((x / xfact) * l, (y / yfact) * l) / l;
+        }
+        return output;
+    }
+
+    public Chunk loadChunk(int i, int j)
+    {
+        return this.provideChunk(i, j);
+    }
+
+    @Override
     public Chunk provideChunk(int cx, int cy)
     {
-    	this.rand.setSeed((long)cx * 341873128712L + (long)cy * 132897987541L);
-    	Block[] var3 = new Block[65536];
-    	byte[] metadata = new byte[65536];
-    	
-        if(typeFloating)
+        this.rand.setSeed((long) cx * 341873128712L + (long) cy * 132897987541L);
+        ChunkPrimer var3 = new ChunkPrimer();
+
+        if (this.typeFloating)
         {
-        	generateSkylands(cx, cy, var3);
-        	generateSurface(cx, cy, var3);
+            this.generateSkylands(cx, cy, var3);
+            this.generateSurface(cx, cy, var3);
         }
         else
         {
-        	generateTerrain(cx, cy, var3, metadata);
+            this.generateTerrain(cx, cy, var3);
         }
-        this.biomesForGeneration = this.worldObj.getWorldChunkManager().loadBlockGeneratorData(this.biomesForGeneration, cx * 16, cy * 16, 16, 16);
+        this.biomesForGeneration = this.chunkManager.loadBlockGeneratorData(this.biomesForGeneration, cx * 16, cy * 16, 16, 16);
 
-        if(!typeFloating)
+        if (!this.typeFloating)
         {
-	        caveGenerator.func_151539_a(this, this.worldObj, cx, cy, var3);
-	        if (mapFeaturesEnabled)
-	        {
-	            mineshaftGenerator.func_151539_a(this, this.worldObj, cx, cy, var3);
-	            strongholdGenerator.func_151539_a(this, this.worldObj, cx, cy, var3);
-	        }
+            this.caveGenerator.generate(this, this.worldObj, cx, cy, var3);
+            if (this.mapFeaturesEnabled)
+            {
+                this.mineshaftGenerator.generate(this, this.worldObj, cx, cy, var3);
+                this.strongholdGenerator.generate(this, this.worldObj, cx, cy, var3);
+            }
         }
-        
-        Chunk var4 = new Chunk(worldObj, var3, metadata, cx, cy);
+
+        Chunk var4 = new Chunk(this.worldObj, var3, cx, cy);
         byte[] var5 = var4.getBiomeArray();
 
         for (int var6 = 0; var6 < var5.length; ++var6)
         {
-            var5[var6] = (byte)this.biomesForGeneration[var6].biomeID;
+            var5[var6] = (byte) this.biomesForGeneration[var6].biomeID;
         }
 
         var4.generateSkylightMap();
         return var4;
     }
 
-    public boolean chunkExists(int par1, int par2)
+    @Override
+    public boolean chunkExists(int i, int j)
     {
         return true;
     }
 
-    public void populate(IChunkProvider par1IChunkProvider, int par2, int par3)
+    @Override
+    public void populate(IChunkProvider ichunkrovider, int i, int j)
     {
-        BlockSand.fallInstantly = true;
-        int var4 = par2 * 16;
-        int var5 = par3 * 16; 
-        BiomeGenBase var6 = worldObj.getBiomeGenForCoords(var4 + 16, var5 + 16);
+        BlockFalling.fallInstantly = true;
+        int var4 = i * 16;
+        int var5 = j * 16;
+        BiomeGenBase var6 = this.chunkManager.getBiomeGenAt(var4 + 16, var5 + 16);
         this.rand.setSeed(this.worldObj.getSeed());
         long var7 = this.rand.nextLong() / 2L * 2L + 1L;
         long var9 = this.rand.nextLong() / 2L * 2L + 1L;
-        this.rand.setSeed((long)par2 * var7 + (long)par3 * var9 ^ this.worldObj.getSeed());
-		double d = 0.25D;
-		
-		MinecraftForge.EVENT_BUS.post(new PopulateChunkEvent.Pre(par1IChunkProvider, worldObj, rand, par2, par3, false));
-		
-        if (mapFeaturesEnabled && !typeFloating)
+        this.rand.setSeed((long) i * var7 + (long) j * var9 ^ this.worldObj.getSeed());
+        double d = 0.25D;
+        ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i, j);
+
+        MinecraftForge.EVENT_BUS.post(new PopulateChunkEvent.Pre(ichunkrovider, this.worldObj, this.rand, i, j, false));
+
+        if (this.mapFeaturesEnabled && !this.typeFloating)
         {
-            mineshaftGenerator.generateStructuresInChunk(this.worldObj, this.rand, par2, par3);
-            strongholdGenerator.generateStructuresInChunk(this.worldObj, this.rand, par2, par3);
+            this.strongholdGenerator.generateStructure(this.worldObj, this.rand, chunkcoordintpair);
+            this.mineshaftGenerator.generateStructure(this.worldObj, this.rand, chunkcoordintpair);
         }
-        
-    	if(par2 == (int) Math.floor(worldObj.getWorldInfo().getSpawnX() / 16) && par3 == (int) Math.floor(worldObj.getWorldInfo().getSpawnZ() / 16))
-    	{
-			int ix = worldObj.getWorldInfo().getSpawnX();
-			int iz = worldObj.getWorldInfo().getSpawnZ();
-			int iy = worldObj.getTopSolidOrLiquidBlock(ix, iz);
-			iy = iy < 60 ? 60 : iy;
-	
-			(new DecoIndevHouse(themeHELL ? 2 : 1)).generate(worldObj, rand, ix, iy, iz);
-    	}
-    	
-    	int extraheight = 128;
-    	int extradeco = 1;
-		if(typeFloating)
-		{
-			extradeco = 2;
-			extraheight = 256;
-		}
-		
-		//ORES
-		if(typeFloating)
-		{
-			if(par2 == 0 && par3 == 0 && dungeons < 2)
-			{
-				(new DecoSkyDungeon(true)).generate(worldObj, rand, 0, 2, 0);
-			}
-			else if(dungeons == 0)
-			{
-				if(rand.nextInt(dungeonRate) == 0)
-				{
-					int j5 = var4 + rand.nextInt(16) + 8;
-					int k88 = rand.nextInt(15);
-					int j11 = var5 + rand.nextInt(16) + 8;
-					(new DecoSkyDungeon(false)).generate(worldObj, rand, j5, k88, j11);
-				}
-			}
-		}
-		else
-		{	
-			for(int k1 = 0; k1 < 12; k1++)
-			{
-				int j5 = var4 + rand.nextInt(16) + 8;
-				int k88 = rand.nextInt(128);
-				int j11 = var5 + rand.nextInt(16) + 8;
-				(new OldGenDungeons()).generate(worldObj, rand, j5, k88, j11);
-			}
-		}
-		
-		for(int k2 = 0; k2 < 5; k2++)
-		{
-			int i6 = var4 + rand.nextInt(16);
-			int j9 = rand.nextInt(64);
-			int i12 = var5 + rand.nextInt(16);
-			(new OldGenMinable(Blocks.gravel, 32, 2)).generate(worldObj, rand, i6, j9, i12);
-		}
 
-		for(int i3 = 0; i3 < 20 * extradeco; i3++)
-		{
-			int j6 = var4 + rand.nextInt(16);
-			int k9 = rand.nextInt(extraheight);
-			int j12 = var5 + rand.nextInt(16);
-			(new OldGenMinable(Blocks.coal_ore, 16, 2)).generate(worldObj, rand, j6, k9, j12);
-		}
+        if (i == (int) Math.floor(this.worldObj.getWorldInfo().getSpawnX() / 16) && j == (int) Math.floor(this.worldObj.getWorldInfo().getSpawnZ() / 16))
+        {
+            int ix = this.worldObj.getWorldInfo().getSpawnX();
+            int iz = this.worldObj.getWorldInfo().getSpawnZ();
+            int iy = this.worldObj.getTopSolidOrLiquidBlock(new BlockPos(ix, 0, iz)).getY();
+            iy = iy < 60 ? 60 : iy;
 
-		for(int j3 = 0; j3 < 20 * extradeco; j3++)
-		{
-			int k6 = var4 + rand.nextInt(16);
-			int l9 = rand.nextInt(64 * extradeco);
-			int k12 = var5 + rand.nextInt(16);
-			(new OldGenMinable(Blocks.iron_ore, 8, 2)).generate(worldObj, rand, k6, l9, k12);
-		}
-		
-		int floatingore = 0;
-		if(typeFloating) { floatingore = 16; }
+            (new DecoIndevHouse(this.themeHELL ? 2 : 1)).generate(this.worldObj, this.rand, ix, iy, iz);
+        }
 
-		for(int k3 = 0; k3 < 2; k3++)
-		{
-			int l6 = var4 + rand.nextInt(16);
-			int i10 = rand.nextInt(32) + floatingore;
-			int l12 = var5 + rand.nextInt(16);
-			(new OldGenMinable(Blocks.gold_ore, 8, 2)).generate(worldObj, rand, l6, i10, l12);
-		}
+        int extraheight = 128;
+        int extradeco = 1;
+        if (this.typeFloating)
+        {
+            extradeco = 2;
+            extraheight = 256;
+        }
 
-		for(int l33 = 0; l33 < 8; l33++)
-		{
-			int i7 = var4 + rand.nextInt(16);
-			int j10 = rand.nextInt(16) + floatingore;
-			int i13 = var5 + rand.nextInt(16);
-			(new OldGenMinable(Blocks.redstone_ore, 7, 2)).generate(worldObj, rand, i7, j10, i13);
-		}
+        // ORES
+        if (this.typeFloating)
+        {
+            if (i == 0 && j == 0 && this.dungeons < 2)
+            {
+                (new DecoSkyDungeon(true)).generate(this.worldObj, this.rand, 0, 2, 0);
+            }
+            else if (this.dungeons == 0)
+            {
+                if (this.rand.nextInt(this.dungeonRate) == 0)
+                {
+                    int j5 = var4 + this.rand.nextInt(16) + 8;
+                    int k88 = this.rand.nextInt(15);
+                    int j11 = var5 + this.rand.nextInt(16) + 8;
+                    (new DecoSkyDungeon(false)).generate(this.worldObj, this.rand, j5, k88, j11);
+                }
+            }
+        }
+        else
+        {
+            for (int k1 = 0; k1 < 12; k1++)
+            {
+                int j5 = var4 + this.rand.nextInt(16) + 8;
+                int k88 = this.rand.nextInt(128);
+                int j11 = var5 + this.rand.nextInt(16) + 8;
+                (new OldGenDungeons()).generate(this.worldObj, this.rand, j5, k88, j11);
+            }
+        }
 
-		for(int i4 = 0; i4 < 1; i4++)
-		{
-			int j7 = var4 + rand.nextInt(16);
-			int k10 = rand.nextInt(16) + floatingore;
-			int j13 = var5 + rand.nextInt(16);
-			(new OldGenMinable(Blocks.diamond_ore, 7, 2)).generate(worldObj, rand, j7, k10, j13);
-		}
+        for (int k2 = 0; k2 < 5; k2++)
+        {
+            int i6 = var4 + this.rand.nextInt(16);
+            int j9 = this.rand.nextInt(64);
+            int i12 = var5 + this.rand.nextInt(16);
+            (new OldGenMinable(Blocks.gravel, 32, 2)).generate(this.worldObj, this.rand, i6, j9, i12);
+        }
 
-		for(int j4 = 0; j4 < 1; j4++)
-		{
-			int k7 = var4 + rand.nextInt(16);
-			int l10 = rand.nextInt(16) + floatingore;
-			int k13 = var5 + rand.nextInt(16);
-			(new OldGenMinable(Blocks.lapis_ore, 6, 2)).generate(worldObj, rand, k7, l10, k13);
-		}		
-		
-		//TREES
+        for (int i3 = 0; i3 < 20 * extradeco; i3++)
+        {
+            int j6 = var4 + this.rand.nextInt(16);
+            int k9 = this.rand.nextInt(extraheight);
+            int j12 = var5 + this.rand.nextInt(16);
+            (new OldGenMinable(Blocks.coal_ore, 16, 2)).generate(this.worldObj, this.rand, j6, k9, j12);
+        }
+
+        for (int j3 = 0; j3 < 20 * extradeco; j3++)
+        {
+            int k6 = var4 + this.rand.nextInt(16);
+            int l9 = this.rand.nextInt(64 * extradeco);
+            int k12 = var5 + this.rand.nextInt(16);
+            (new OldGenMinable(Blocks.iron_ore, 8, 2)).generate(this.worldObj, this.rand, k6, l9, k12);
+        }
+
+        int floatingore = 0;
+        if (this.typeFloating)
+        {
+            floatingore = 16;
+        }
+
+        for (int k3 = 0; k3 < 2; k3++)
+        {
+            int l6 = var4 + this.rand.nextInt(16);
+            int i10 = this.rand.nextInt(32) + floatingore;
+            int l12 = var5 + this.rand.nextInt(16);
+            (new OldGenMinable(Blocks.gold_ore, 8, 2)).generate(this.worldObj, this.rand, l6, i10, l12);
+        }
+
+        for (int l33 = 0; l33 < 8; l33++)
+        {
+            int i7 = var4 + this.rand.nextInt(16);
+            int j10 = this.rand.nextInt(16) + floatingore;
+            int i13 = var5 + this.rand.nextInt(16);
+            (new OldGenMinable(Blocks.redstone_ore, 7, 2)).generate(this.worldObj, this.rand, i7, j10, i13);
+        }
+
+        for (int i4 = 0; i4 < 1; i4++)
+        {
+            int j7 = var4 + this.rand.nextInt(16);
+            int k10 = this.rand.nextInt(16) + floatingore;
+            int j13 = var5 + this.rand.nextInt(16);
+            (new OldGenMinable(Blocks.diamond_ore, 7, 2)).generate(this.worldObj, this.rand, j7, k10, j13);
+        }
+
+        for (int j4 = 0; j4 < 1; j4++)
+        {
+            int k7 = var4 + this.rand.nextInt(16);
+            int l10 = this.rand.nextInt(16) + floatingore;
+            int k13 = var5 + this.rand.nextInt(16);
+            (new OldGenMinable(Blocks.lapis_ore, 6, 2)).generate(this.worldObj, this.rand, k7, l10, k13);
+        }
+
+        // TREES
         d = 0.5D;
-        int l333 = (int)((mobSpawnerNoise.func_806_a((double)var4 * d, (double)var5 * d) / 8D + rand.nextDouble() * 4D + 4D) / 3D);
-        if(l333 < 0)
+        int l333 = (int) ((this.mobSpawnerNoise.func_806_a((double) var4 * d, (double) var5 * d) / 8D + this.rand.nextDouble() * 4D + 4D) / 3D);
+        if (l333 < 0)
         {
             l333 = 0;
         }
-        if(rand.nextInt(10) == 0)
+        if (this.rand.nextInt(10) == 0)
         {
             l333++;
         }
-		if(themeWOODS){ l333 += 8; }
-		else if(typeIsland){ l333 += 1; }
-		Object obj = new WorldGenTrees(false, 5, 0, 0, false);
-        for(int k88 = 0; k88 < l333; k88++)
+        if (this.themeWOODS)
         {
-            int j133 = var4 + rand.nextInt(16) + 8;
-            int l155 = var5 + rand.nextInt(16) + 8;
-            ((WorldGenerator) (obj)).setScale(1.0D, 1.0D, 1.0D);
-            ((WorldGenerator) (obj)).generate(worldObj, rand, j133, worldObj.getHeightValue(j133, l155), l155);
+            l333 += 8;
         }
-		
-		//FLOWERS
-		int amount1 = 2; 
-		if(themePARADISE){ amount1 = 8; }
-		for(int i34 = 0; i34 < amount1; i34++)
-		{
-			for(int i14 = 0; i14 < 2 * extradeco; i14++)
-			{
-				int k14 = var4 + rand.nextInt(16) + 8;
-				int l16 = rand.nextInt(extraheight);
-				int k19 = var5 + rand.nextInt(16) + 8;
-				(new WorldGenFlowers(Blocks.yellow_flower)).generate(worldObj, rand, k14, l16, k19);
-			}
-			if(rand.nextInt(2 / extradeco) == 0)
-			{
-				int j15 = var4 + rand.nextInt(16) + 8;
-				int j17 = rand.nextInt(extraheight);
-				int j20 = var5 + rand.nextInt(16) + 8;
-				(new WorldGenFlowers(Blocks.red_flower)).generate(worldObj, rand, j15, j17, j20);
-			}
-		}	
-		
-		//MUSHROOMS
-		if(themeHELL || themeWOODS) 
-		{
-			int k15 = var4 + rand.nextInt(16) + 8;
-			int k17 = rand.nextInt(extraheight);
-			int k20 = var5 + rand.nextInt(16) + 8;
-			(new WorldGenFlowers(Blocks.brown_mushroom)).generate(worldObj, rand, k15, k17, k20);
-			
-			if(rand.nextInt(2 / extradeco) == 0)
-			{
-				int l15 = var4 + rand.nextInt(16) + 8;
-				int l17 = rand.nextInt(extraheight);
-				int l20 = var5 + rand.nextInt(16) + 8;
-				(new WorldGenFlowers(Blocks.red_mushroom)).generate(worldObj, rand, l15, l17, l20);
-			} 
-		}
-		else
-		{
-			if(rand.nextInt(4 / extradeco) == 0)
-			{
-				int k15 = var4 + rand.nextInt(16) + 8;
-				int k17 = rand.nextInt(extraheight);
-				int k20 = var5 + rand.nextInt(16) + 8;
-				(new WorldGenFlowers(Blocks.brown_mushroom)).generate(worldObj, rand, k15, k17, k20);
-			}
-			if(rand.nextInt(8 / extradeco) == 0)
-			{
-				int l15 = var4 + rand.nextInt(16) + 8;
-				int l17 = rand.nextInt(extraheight);
-				int l20 = var5 + rand.nextInt(16) + 8;
-				(new WorldGenFlowers(Blocks.red_mushroom)).generate(worldObj, rand, l15, l17, l20);
-			} 
-		}
-		
-        SpawnerAnimals.performWorldGenSpawning(this.worldObj, var6, var4 + 8, var5 + 8, 16, 16, this.rand);
-        BlockSand.fallInstantly = false;
-		
-		if(themeSNOW)
-		{
-			var4 += 8;
-			var5 += 8;
+        else if (this.typeIsland)
+        {
+            l333 += 1;
+        }
+        Object obj = new WorldGenTrees(false, 5, Blocks.log.getDefaultState(), Blocks.leaves.getDefaultState(), false);
+        for (int k88 = 0; k88 < l333; k88++)
+        {
+            int j133 = var4 + this.rand.nextInt(16) + 8;
+            int l155 = var5 + this.rand.nextInt(16) + 8;
+            ((WorldGenerator) (obj)).func_175904_e();
+            ((WorldGenerator) (obj)).generate(this.worldObj, this.rand, this.worldObj.getHeight(new BlockPos(j133, 0, l155)));
+        }
 
-			for (int var85 = 0; var85 < 16; ++var85)
-			{
-				for (int var86 = 0; var86 < 16; ++var86)
-				{
-					int var87 = this.worldObj.getPrecipitationHeight(var4 + var85, var5 + var86);
-					
-					if (this.worldObj.isBlockFreezable(var85 + var4, var87 - 1, var86 + var5))
-					{
-						this.worldObj.setBlock(var85 + var4, var87 - 1, var86 + var5, Blocks.ice, 0, 2);
-					}
+        // FLOWERS
+        int amount1 = 2;
+        if (this.themePARADISE)
+        {
+            amount1 = 8;
+        }
+        for (int i34 = 0; i34 < amount1; i34++)
+        {
+            for (int i14 = 0; i14 < 2 * extradeco; i14++)
+            {
+                int k14 = var4 + this.rand.nextInt(16) + 8;
+                int l16 = this.rand.nextInt(extraheight);
+                int k19 = var5 + this.rand.nextInt(16) + 8;
+                (new WorldGenFlowers(Blocks.yellow_flower, BlockFlower.EnumFlowerType.DANDELION)).generate(this.worldObj, this.rand,
+                        new BlockPos(k14, l16, k19));
+            }
+            if (this.rand.nextInt(2 / extradeco) == 0)
+            {
+                int j15 = var4 + this.rand.nextInt(16) + 8;
+                int j17 = this.rand.nextInt(extraheight);
+                int j20 = var5 + this.rand.nextInt(16) + 8;
+                (new WorldGenFlowers(Blocks.red_flower, BlockFlower.EnumFlowerType.POPPY)).generate(this.worldObj, this.rand, new BlockPos(j15, j17, j20));
+            }
+        }
 
-					Block b = worldObj.getBlock(var85 + var4, var87 - 1, var86 + var5);
-					if (this.worldObj.func_147478_e(var85 + var4, var87, var86 + var5, false) && b != Blocks.ice && b != Blocks.water && var87 > 63)
-					{
-						this.worldObj.setBlock(var85 + var4, var87, var86 + var5, Blocks.snow_layer, 0, 2);
-					}
-				}
-			}
-		}
-		
-		MinecraftForge.EVENT_BUS.post(new PopulateChunkEvent.Post(par1IChunkProvider, worldObj, rand, par2, par3, false));
+        // MUSHROOMS
+        if (this.themeHELL || this.themeWOODS)
+        {
+            int k15 = var4 + this.rand.nextInt(16) + 8;
+            int k17 = this.rand.nextInt(extraheight);
+            int k20 = var5 + this.rand.nextInt(16) + 8;
+            (new GeneratorBushFeature(Blocks.brown_mushroom)).generate(this.worldObj, this.rand, new BlockPos(k15, k17, k20));
+
+            if (this.rand.nextInt(2 / extradeco) == 0)
+            {
+                int l15 = var4 + this.rand.nextInt(16) + 8;
+                int l17 = this.rand.nextInt(extraheight);
+                int l20 = var5 + this.rand.nextInt(16) + 8;
+                (new GeneratorBushFeature(Blocks.red_mushroom)).generate(this.worldObj, this.rand, new BlockPos(l15, l17, l20));
+            }
+        }
+        else
+        {
+            if (this.rand.nextInt(4 / extradeco) == 0)
+            {
+                int k15 = var4 + this.rand.nextInt(16) + 8;
+                int k17 = this.rand.nextInt(extraheight);
+                int k20 = var5 + this.rand.nextInt(16) + 8;
+                (new GeneratorBushFeature(Blocks.brown_mushroom)).generate(this.worldObj, this.rand, new BlockPos(k15, k17, k20));
+            }
+            if (this.rand.nextInt(8 / extradeco) == 0)
+            {
+                int l15 = var4 + this.rand.nextInt(16) + 8;
+                int l17 = this.rand.nextInt(extraheight);
+                int l20 = var5 + this.rand.nextInt(16) + 8;
+                (new GeneratorBushFeature(Blocks.red_mushroom)).generate(this.worldObj, this.rand, new BlockPos(l15, l17, l20));
+            }
+        }
+
+        SpawnerAnimals.performWorldGenSpawning(this.worldObj, this.chunkManager.getBiomeGenAtChunkCoord(chunkcoordintpair), var4 + 8, var5 + 8, 16, 16,
+                this.rand);
+        BlockFalling.fallInstantly = false;
+
+        if (this.themeSNOW)
+        {
+            var4 += 8;
+            var5 += 8;
+
+            for (int var85 = 0; var85 < 16; ++var85)
+            {
+                for (int var86 = 0; var86 < 16; ++var86)
+                {
+                    BlockPos blockpos1 = this.worldObj.getPrecipitationHeight(new BlockPos(var4 + var85, 0, var5 + var86));
+                    BlockPos blockpos2 = blockpos1.down();
+
+                    if (this.worldObj.canBlockFreezeWater(blockpos2))
+                    {
+                        this.worldObj.setBlockState(blockpos2, Blocks.ice.getDefaultState(), 2);
+                    }
+
+                    if (this.worldObj.canSnowAt(blockpos1, true))
+                    {
+                        this.worldObj.setBlockState(blockpos1, Blocks.snow_layer.getDefaultState(), 2);
+                    }
+                }
+            }
+        }
+
+        MinecraftForge.EVENT_BUS.post(new PopulateChunkEvent.Post(ichunkrovider, this.worldObj, this.rand, i, j, false));
     }
 
-    public boolean saveChunks(boolean par1, IProgressUpdate par2IProgressUpdate)
+    @Override
+    public Chunk provideChunk(BlockPos blockPosIn)
+    {
+        return this.provideChunk(blockPosIn.getX() >> 4, blockPosIn.getZ() >> 4);
+    }
+
+    @Override
+    public boolean func_177460_a(IChunkProvider p_177460_1_, Chunk p_177460_2_, int p_177460_3_, int p_177460_4_)
+    {
+        return false;
+    }
+
+    @Override
+    public boolean saveChunks(boolean p_73151_1_, IProgressUpdate progressCallback)
     {
         return true;
     }
-	
+
+    @Override
     public boolean unloadQueuedChunks()
     {
         return false;
     }
 
-    public boolean unload100OldestChunks()
+    @Override
+    public boolean canSave()
     {
         return false;
     }
 
-    public boolean canSave()
-    {
-        return true;
-    }
-
+    @Override
     public String makeString()
     {
         return "RandomLevelSource";
     }
-	
-    public List getPossibleCreatures(EnumCreatureType par1EnumCreatureType, int par2, int par3, int par4)
+
+    @Override
+    public List getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos)
     {
-        BiomeGenBase var5 = this.worldObj.getBiomeGenForCoords(par2, par4);
-        return var5 == null ? null : var5.getSpawnableList(par1EnumCreatureType);
+        return this.worldObj.getBiomeGenForCoords(pos).getSpawnableList(creatureType);
     }
 
-    public ChunkPosition func_147416_a(World par1World, String par2Str, int par3, int par4, int par5)
+    @Override
+    public BlockPos getStrongholdGen(World worldIn, String structureName, BlockPos position)
     {
-        return "Stronghold".equals(par2Str) && this.strongholdGenerator != null ? this.strongholdGenerator.func_151545_a(par1World, par3, par4, par5) : null;
+        return "Stronghold".equals(structureName) && this.strongholdGenerator != null ? this.strongholdGenerator.getClosestStrongholdPos(worldIn, position)
+                : null;
     }
 
+    @Override
     public int getLoadedChunkCount()
     {
         return 0;
     }
 
-    public void saveExtraData() {}
-
-    public void recreateStructures(int par1, int par2)
+    @Override
+    public void saveExtraData()
     {
-        if (this.mapFeaturesEnabled && !typeFloating)
+    }
+
+    @Override
+    public void recreateStructures(Chunk chunk, int i, int j)
+    {
+        if (this.mapFeaturesEnabled && !this.typeFloating)
         {
-            this.mineshaftGenerator.func_151539_a(this, this.worldObj, par1, par2, (Block[])null);
-            this.strongholdGenerator.func_151539_a(this, this.worldObj, par1, par2, (Block[])null);
+            this.strongholdGenerator.generate(this, this.worldObj, i, j, (ChunkPrimer) null);
+            this.mineshaftGenerator.generate(this, this.worldObj, i, j, (ChunkPrimer) null);
         }
     }
 }
