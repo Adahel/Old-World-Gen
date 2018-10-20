@@ -33,21 +33,29 @@ public class GeneratorTypeIndev extends GeneratorType
                         StatCollector.translateToLocal("owg.setting.type") + ": " + StatCollector.translateToLocal("owg.type.floating"),
                         StatCollector.translateToLocal("owg.setting.type") + ": " + StatCollector.translateToLocal("owg.type.inland") },
                 new int[] { 0, 1, 2 }, 21, 70, gui.width));
-        gui.settings.add(new GuiSettingsSlider(
-                new String[] { StatCollector.translateToLocal("owg.setting.size") + ": " + StatCollector.translateToLocal("owg.setting.small"),
-                        StatCollector.translateToLocal("owg.setting.size") + ": " + StatCollector.translateToLocal("owg.setting.default"),
-                        StatCollector.translateToLocal("owg.setting.size") + ": " + StatCollector.translateToLocal("owg.setting.large") },
-                new int[] { 0, 1, 2 }, 1, 22, 90, gui.width, 21, new int[] { 0, 1 }));
-        gui.settings.add(new GuiSettingsSlider(
-                new String[] { StatCollector.translateToLocal("owg.setting.layer") + ": 1", StatCollector.translateToLocal("owg.setting.layer") + ": 2",
-                        StatCollector.translateToLocal("owg.setting.layer") + ": 3", StatCollector.translateToLocal("owg.setting.layer") + ": 4",
-                        StatCollector.translateToLocal("owg.setting.layer") + ": 5" },
-                new int[] { 0, 1, 2, 3, 4 }, 1, 23, 110, gui.width, 21, new int[] { 1 }));
+        gui.settings.add(new GuiSettingsButton(
+                new String[] { StatCollector.translateToLocal("owg.setting.stronghold") + ": " + StatCollector.translateToLocal("owg.setting.on"),
+                        StatCollector.translateToLocal("owg.setting.stronghold") + ": " + StatCollector.translateToLocal("owg.setting.off") },
+                new int[] { 0, 1 }, 22, 90, gui.width, 21, new int[] { 0, 2 }));
+        gui.settings.add(new GuiSettingsButton(
+                new String[] { StatCollector.translateToLocal("owg.setting.mineshaft") + ": " + StatCollector.translateToLocal("owg.setting.on"),
+                        StatCollector.translateToLocal("owg.setting.mineshaft") + ": " + StatCollector.translateToLocal("owg.setting.off") },
+                new int[] { 0, 1 }, 23, 110, gui.width, 21, new int[] { 0, 2 }));
         gui.settings.add(new GuiSettingsButton(
                 new String[] { StatCollector.translateToLocal("owg.setting.dungeon") + ": " + StatCollector.translateToLocal("owg.setting.on"),
                         StatCollector.translateToLocal("owg.setting.dungeon") + ": " + StatCollector.translateToLocal("owg.setting.end"),
                         StatCollector.translateToLocal("owg.setting.dungeon") + ": " + StatCollector.translateToLocal("owg.setting.off") },
-                new int[] { 0, 1, 2 }, 24, 130, gui.width, 21, new int[] { 1 }));
+                new int[] { 0, 1, 2 }, 24, 90, gui.width, 21, new int[] { 1 }));
+        gui.settings.add(new GuiSettingsSlider(
+                new String[] { StatCollector.translateToLocal("owg.setting.layer") + ": 1", StatCollector.translateToLocal("owg.setting.layer") + ": 2",
+                        StatCollector.translateToLocal("owg.setting.layer") + ": 3", StatCollector.translateToLocal("owg.setting.layer") + ": 4",
+                        StatCollector.translateToLocal("owg.setting.layer") + ": 5" },
+                new int[] { 0, 1, 2, 3, 4 }, 1, 25, 110, gui.width, 21, new int[] { 1 }));
+        gui.settings.add(new GuiSettingsSlider(
+                new String[] { StatCollector.translateToLocal("owg.setting.size") + ": " + StatCollector.translateToLocal("owg.setting.small"),
+                        StatCollector.translateToLocal("owg.setting.size") + ": " + StatCollector.translateToLocal("owg.setting.default"),
+                        StatCollector.translateToLocal("owg.setting.size") + ": " + StatCollector.translateToLocal("owg.setting.large") },
+                new int[] { 0, 1, 2 }, 1, 26, 130, gui.width, 21, new int[] { 0, 1 }));
         return true;
     }
 
@@ -72,9 +80,11 @@ public class GeneratorTypeIndev extends GeneratorType
     {
         int themeID = trySetting(0, 4) + 1;
         int typeID = trySetting(1, 2) + 1;
-        int size = trySetting(2, 2) + 1;
-        int layers = trySetting(3, 4) + 1;
+        int strongholds = trySetting(2, 1);
+        int mineshafts = trySetting(3, 1);
         int dungeons = trySetting(4, 2);
-        return new ChunkGeneratorIndev(world, world.getSeed(), world.getWorldInfo().isMapFeaturesEnabled(), typeID, themeID, size, layers, dungeons);
+        int layers = trySetting(5, 4) + 1;
+        int size = trySetting(6, 2) + 1;
+        return new ChunkGeneratorIndev(world, world.getSeed(), typeID, themeID, strongholds, mineshafts, dungeons, layers, size);
     }
 }

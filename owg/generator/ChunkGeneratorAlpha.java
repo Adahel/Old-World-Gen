@@ -55,7 +55,8 @@ public class ChunkGeneratorAlpha implements IChunkProvider
     public NoiseOctavesAlpha field_920_c;
 
     private World worldObj_16;
-    private final boolean mapFeaturesEnabled;
+    public final int strongholds;
+    public final int mineshafts;
     private double field_4180_q[];
     private double field_905_r[];
     private double field_904_s[];
@@ -73,7 +74,7 @@ public class ChunkGeneratorAlpha implements IChunkProvider
     private double field_4178_w[];
     private final ManagerOWG chunkManager;
 
-    public ChunkGeneratorAlpha(World world, long l, boolean isEnabled)
+    public ChunkGeneratorAlpha(World world, long l, int aStronghold, int aMineshaft)
     {
         this.field_905_r = new double[256];
         this.field_904_s = new double[256];
@@ -81,7 +82,8 @@ public class ChunkGeneratorAlpha implements IChunkProvider
         this.field_902_u = new MapGenOLDCaves();
         this.field_914_i = new int[32][32];
         this.worldObj_16 = world;
-        this.mapFeaturesEnabled = isEnabled;
+        this.strongholds = aStronghold;
+        this.mineshafts = aMineshaft;
         this.field_913_j = new Random(l);
         this.rand2 = new Random(l);
         this.field_912_k = new NoiseOctavesAlpha(this.field_913_j, 16);
@@ -287,10 +289,14 @@ public class ChunkGeneratorAlpha implements IChunkProvider
 
         this.field_902_u.generate(this.worldObj_16, i, j, chunkprimer);
 
-        if (this.mapFeaturesEnabled)
+        if (this.mineshafts == 0)
+        {
+            this.mineshaftGenerator.generate(this, this.worldObj_16, i, j, chunkprimer);
+        }
+
+        if (this.strongholds == 0)
         {
             this.strongholdGenerator.generate(this, this.worldObj_16, i, j, chunkprimer);
-            this.mineshaftGenerator.generate(this, this.worldObj_16, i, j, chunkprimer);
         }
 
         Chunk chunk = new Chunk(this.worldObj_16, chunkprimer, i, j);
@@ -435,10 +441,14 @@ public class ChunkGeneratorAlpha implements IChunkProvider
         double d = 0.25D;
         ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i, j);
 
-        if (this.mapFeaturesEnabled)
+        if (this.mineshafts == 0)
+        {
+            this.mineshaftGenerator.generateStructure(this.worldObj_16, this.field_913_j, chunkcoordintpair);
+        }
+
+        if (this.strongholds == 0)
         {
             this.strongholdGenerator.generateStructure(this.worldObj_16, this.field_913_j, chunkcoordintpair);
-            this.mineshaftGenerator.generateStructure(this.worldObj_16, this.field_913_j, chunkcoordintpair);
         }
 
         if (this.field_913_j.nextInt(4) == 0)
@@ -742,10 +752,14 @@ public class ChunkGeneratorAlpha implements IChunkProvider
     @Override
     public void recreateStructures(Chunk chunk, int i, int j)
     {
-        if (this.mapFeaturesEnabled)
+        if (this.mineshafts == 0)
+        {
+            this.mineshaftGenerator.generate(this, this.worldObj_16, i, j, (ChunkPrimer) null);
+        }
+
+        if (this.strongholds == 0)
         {
             this.strongholdGenerator.generate(this, this.worldObj_16, i, j, (ChunkPrimer) null);
-            this.mineshaftGenerator.generate(this, this.worldObj_16, i, j, (ChunkPrimer) null);
         }
     }
 

@@ -4,6 +4,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.chunk.IChunkProvider;
 import owg.biomes.BiomeList;
+import owg.data.DecodeGeneratorString;
 import owg.gui.GuiGeneratorSettings;
 import owg.world.ManagerOWGHell;
 
@@ -91,5 +92,19 @@ public class GeneratorType
             }
         }
         return 0;
+    }
+
+    public static boolean exists(String gen)
+    {
+        DecodeGeneratorString.decode(gen);
+
+        if ((currentGenerator != null) && (currentSettings != null))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

@@ -1,27 +1,9 @@
 package owg.support;
 
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.fml.common.Loader;
+import thaumcraft.common.lib.world.biomes.BiomeHandler;
 
 public class SupportTC
 {
-    public static BiomeGenBase biomeMagicalForest()
-    {
-        BiomeGenBase[] b = BiomeGenBase.getBiomeGenArray();
-
-        for (int i = 0; Loader.isModLoaded("Thaumcraft") && i < 256; i++)
-        {
-            if (b[i] != null)
-            {
-                if (b[i].biomeName == "Magical Forest")
-                {
-                    return b[i];
-                }
-            }
-        }
-        return BiomeGenBase.field_180279_ad;
-    }
-
     public static void init()
     {
         try
@@ -37,9 +19,11 @@ public class SupportTC
     public static void addTCBiomes()
     {
         System.out.println("OWG: Thaumcraft support is loading");
-        BiomeGenBase biomeMagicalForest = biomeMagicalForest();
-        System.out.println("Thaumcraft biome added: " + biomeMagicalForest.biomeName);
-        Support.biomes_small.add(biomeMagicalForest);
+        if (BiomeHandler.biomeMagicalForest != null)
+        {
+            Support.biomes_small.add(BiomeHandler.biomeMagicalForest);
+            System.out.println("Thaumcraft biome added: " + BiomeHandler.biomeMagicalForest.biomeName);
+        }
         System.out.println("OWG: Thaumcraft support was loaded");
     }
 }

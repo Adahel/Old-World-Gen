@@ -141,6 +141,7 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
                 this.biomeList_cold.addAll(Support.biomes_cold);
                 this.biomeList_hot.addAll(Support.biomes_hot);
                 this.biomeList_wet.addAll(Support.biomes_wet);
+                this.biomeList_small.addAll(Support.biomes_small);
             }
 
             if (biomes > 0)

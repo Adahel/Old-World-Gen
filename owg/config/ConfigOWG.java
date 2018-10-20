@@ -2,11 +2,13 @@ package owg.config;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import owg.generatortype.GeneratorType;
 
 public class ConfigOWG
 {
     public static Configuration config;
     public static int[] biomeIDs = new int[12];
+    public static String defaultGen;
 
     public static void init(FMLPreInitializationEvent event)
     {
@@ -36,6 +38,14 @@ public class ConfigOWG
             // INFDEV-INDEV-CLASSIC BIOMES
             biomeIDs[10] = config.get("2 - Infdev & Indev", "Classic", 198).getInt();
             biomeIDs[11] = config.get("2 - Infdev & Indev", "ClassicSnow", 199).getInt();
+
+            defaultGen = config.get("Generator", "default-setting", "BETA173#").getString();
+
+            // if setting doesn't exists set to default
+            if (GeneratorType.exists(defaultGen) == false)
+            {
+                defaultGen = "BETA173#";
+            }
         }
         catch (Exception e)
         {

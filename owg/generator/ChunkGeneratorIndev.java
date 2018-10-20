@@ -54,7 +54,8 @@ public class ChunkGeneratorIndev implements IChunkProvider
     public NoisePerlinIndev perlinGen1;
 
     private World worldObj;
-    private final boolean mapFeaturesEnabled;
+    public final int strongholds;
+    public final int mineshafts;
     private MapGenBase caveGenerator = new MapGenCaves();
     private MapGenStronghold strongholdGenerator = new MapGenStronghold();
     private MapGenMineshaft mineshaftGenerator = new MapGenMineshaft();
@@ -73,12 +74,13 @@ public class ChunkGeneratorIndev implements IChunkProvider
     private int dungeonRate = 15;
     private final ManagerOWGHell chunkManager;
 
-    public ChunkGeneratorIndev(World worldIn, long l, boolean isEnabled, int type, int theme, int size, int layers, int dungeons)
+    public ChunkGeneratorIndev(World worldIn, long l, int type, int theme, int devStrongholds, int devMineshafts, int dungeons, int layers, int size)
     {
         this.worldObj = worldIn;
         this.worldObj.getWorldInfo().setSpawn(new BlockPos(0, 256, 0));
 
-        this.mapFeaturesEnabled = isEnabled;
+        this.strongholds = devStrongholds;
+        this.mineshafts = devMineshafts;
         this.rand = new Random(l);
         this.noiseGen1 = new NoiseOctavesIndev(this.rand, 16);
         this.noiseGen2 = new NoiseOctavesIndev(this.rand, 16);
@@ -548,9 +550,14 @@ public class ChunkGeneratorIndev implements IChunkProvider
         if (!this.typeFloating)
         {
             this.caveGenerator.generate(this, this.worldObj, cx, cy, var3);
-            if (this.mapFeaturesEnabled)
+
+            if (this.mineshafts == 0)
             {
                 this.mineshaftGenerator.generate(this, this.worldObj, cx, cy, var3);
+            }
+
+            if (this.strongholds == 0)
+            {
                 this.strongholdGenerator.generate(this, this.worldObj, cx, cy, var3);
             }
         }
@@ -589,10 +596,17 @@ public class ChunkGeneratorIndev implements IChunkProvider
 
         MinecraftForge.EVENT_BUS.post(new PopulateChunkEvent.Pre(ichunkrovider, this.worldObj, this.rand, i, j, false));
 
-        if (this.mapFeaturesEnabled && !this.typeFloating)
+        if (!this.typeFloating)
         {
-            this.strongholdGenerator.generateStructure(this.worldObj, this.rand, chunkcoordintpair);
-            this.mineshaftGenerator.generateStructure(this.worldObj, this.rand, chunkcoordintpair);
+            if (this.mineshafts == 0)
+            {
+                this.mineshaftGenerator.generateStructure(this.worldObj, this.rand, chunkcoordintpair);
+            }
+
+            if (this.strongholds == 0)
+            {
+                this.strongholdGenerator.generateStructure(this.worldObj, this.rand, chunkcoordintpair);
+            }
         }
 
         if (i == (int) Math.floor(this.worldObj.getWorldInfo().getSpawnX() / 16) && j == (int) Math.floor(this.worldObj.getWorldInfo().getSpawnZ() / 16))
@@ -886,10 +900,17 @@ public class ChunkGeneratorIndev implements IChunkProvider
     @Override
     public void recreateStructures(Chunk chunk, int i, int j)
     {
-        if (this.mapFeaturesEnabled && !this.typeFloating)
+        if (!this.typeFloating)
         {
-            this.strongholdGenerator.generate(this, this.worldObj, i, j, (ChunkPrimer) null);
-            this.mineshaftGenerator.generate(this, this.worldObj, i, j, (ChunkPrimer) null);
+            if (this.mineshafts == 0)
+            {
+                this.strongholdGenerator.generate(this, this.worldObj, i, j, (ChunkPrimer) null);
+            }
+
+            if (this.strongholds == 0)
+            {
+                this.mineshaftGenerator.generate(this, this.worldObj, i, j, (ChunkPrimer) null);
+            }
         }
     }
 }

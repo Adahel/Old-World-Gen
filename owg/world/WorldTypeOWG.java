@@ -9,6 +9,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import owg.biomes.BiomeList;
+import owg.config.ConfigOWG;
 import owg.data.DecodeGeneratorString;
 import owg.generatortype.GeneratorType;
 import owg.gui.GuiGeneratorSettings;
@@ -32,7 +33,7 @@ public class WorldTypeOWG extends WorldType
             }
             else
             {
-                DecodeGeneratorString.decode("BETA173#");
+                DecodeGeneratorString.decode(ConfigOWG.defaultGen);
             }
 
             return GeneratorType.currentGenerator.getServerWorldChunkManager(world);

@@ -30,6 +30,11 @@ public class Support
             SupportBOP.init();
         }
 
+        if (Loader.isModLoaded("highlands"))
+        {
+            SupportHL.init();
+        }
+
         if (Loader.isModLoaded("Thaumcraft"))
         {
             SupportTC.init();

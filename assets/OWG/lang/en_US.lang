@@ -1,7 +1,9 @@
 generator.OWG=Old World Gen
 
+gui.title=Old World Generator Settings
 gui.selectGenerator=Select a world generator:
 gui.generatorSettings=Generator settings:
+gui.serverConfig=Server config:
 gui.copystring=Copy generator-settings to Clipboard
 
 owg.setting.size=Size
@@ -15,7 +17,11 @@ owg.setting.off=OFF
 owg.setting.theme=Theme
 owg.setting.type=Type
 owg.setting.layer=Layer
+owg.setting.village=Villages
+owg.setting.temple=Temples
 owg.setting.dungeon=Dungeons
+owg.setting.stronghold=Strongholds
+owg.setting.mineshaft=Mineshafts
 owg.setting.ravine=Ravines
 owg.setting.end=End portal only
 

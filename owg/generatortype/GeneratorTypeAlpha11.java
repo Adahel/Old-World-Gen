@@ -24,6 +24,14 @@ public class GeneratorTypeAlpha11 extends GeneratorType
                 new String[] { StatCollector.translateToLocal("owg.setting.snow") + ": " + StatCollector.translateToLocal("owg.setting.off"),
                         StatCollector.translateToLocal("owg.setting.snow") + ": " + StatCollector.translateToLocal("owg.setting.on") },
                 new int[] { 0, 1 }, 20, 50, gui.width));
+        gui.settings.add(new GuiSettingsButton(
+                new String[] { StatCollector.translateToLocal("owg.setting.stronghold") + ": " + StatCollector.translateToLocal("owg.setting.on"),
+                        StatCollector.translateToLocal("owg.setting.stronghold") + ": " + StatCollector.translateToLocal("owg.setting.off") },
+                new int[] { 0, 1 }, 21, 70, gui.width));
+        gui.settings.add(new GuiSettingsButton(
+                new String[] { StatCollector.translateToLocal("owg.setting.mineshaft") + ": " + StatCollector.translateToLocal("owg.setting.on"),
+                        StatCollector.translateToLocal("owg.setting.mineshaft") + ": " + StatCollector.translateToLocal("owg.setting.off") },
+                new int[] { 0, 1 }, 22, 90, gui.width));
         return true;
     }
 
@@ -46,6 +54,8 @@ public class GeneratorTypeAlpha11 extends GeneratorType
     @Override
     public IChunkProvider getChunkGenerator(World world)
     {
-        return new ChunkGeneratorInfdev(world, world.getSeed(), world.getWorldInfo().isMapFeaturesEnabled(), true);
+        int strongholds = trySetting(1, 1);
+        int mineshafts = trySetting(2, 1);
+        return new ChunkGeneratorInfdev(world, world.getSeed(), strongholds, mineshafts, true);
     }
 }

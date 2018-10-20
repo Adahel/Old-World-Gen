@@ -6,11 +6,19 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiCreateWorld;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.WorldType;
+import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import owg.OWG;
+import owg.config.ConfigOWG;
 import owg.data.DecodeGeneratorString;
 import owg.generatortype.GeneratorType;
 
 public class GuiGeneratorSettings extends GuiScreen
 {
+    private final GuiEventHandler eventHandler;
     private final GuiCreateWorld createWorldGui;
 
     public GuiButton BUTTON_DONE;
@@ -29,12 +37,15 @@ public class GuiGeneratorSettings extends GuiScreen
 
     public GuiGeneratorSettings(GuiCreateWorld gcw, String gs)
     {
+        this.eventHandler = new GuiEventHandler();
         this.createWorldGui = gcw;
         this.decodebool = true;
 
-        this.translatedDrawStrings = new String[2];
-        this.translatedDrawStrings[0] = StatCollector.translateToLocal("gui.selectGenerator");
-        this.translatedDrawStrings[1] = StatCollector.translateToLocal("gui.generatorSettings");
+        this.translatedDrawStrings = new String[4];
+        this.translatedDrawStrings[0] = StatCollector.translateToLocal("gui.title");
+        this.translatedDrawStrings[1] = StatCollector.translateToLocal("gui.selectGenerator");
+        this.translatedDrawStrings[2] = StatCollector.translateToLocal("gui.generatorSettings");
+        this.translatedDrawStrings[3] = StatCollector.translateToLocal("gui.serverConfig");
     }
 
     @Override
@@ -50,6 +61,7 @@ public class GuiGeneratorSettings extends GuiScreen
         {
             this.decodebool = false;
             this.decodeString(this.createWorldGui.chunkProviderSettingsJson);
+            this.dependencies();
         }
         else
         {
@@ -73,10 +85,12 @@ public class GuiGeneratorSettings extends GuiScreen
         if (button.id == 0) // DONE
         {
             this.createWorldGui.chunkProviderSettingsJson = this.createString();
+            MinecraftForge.EVENT_BUS.register(this.eventHandler);
             this.mc.displayGuiScreen(this.createWorldGui);
         }
         else if (button.id == 1) // CANCEL
         {
+            MinecraftForge.EVENT_BUS.register(this.eventHandler);
             this.mc.displayGuiScreen(this.createWorldGui);
         }
         else if (button.id == 2) // COPY SETTINGS
@@ -117,19 +131,19 @@ public class GuiGeneratorSettings extends GuiScreen
         this.drawDefaultBackground();
 
         // title
-        String title = "Old World Generator Settings";
+        String title = this.translatedDrawStrings[0];
         this.drawString(this.fontRendererObj, title, (int) Math.floor(this.width / 2) - (int) Math.floor(this.fontRendererObj.getStringWidth(title) / 2), 10,
                 16777215);
 
         // select generator
-        this.drawString(this.fontRendererObj, this.translatedDrawStrings[0], this.width / 2 - 155 + 1, 40, 10526880);
+        this.drawString(this.fontRendererObj, this.translatedDrawStrings[1], this.width / 2 - 155 + 1, 40, 10526880);
 
         if (this.hasSettings)
         {
-            this.drawString(this.fontRendererObj, this.translatedDrawStrings[1], this.width / 2 + 6, 40, 10526880);
+            this.drawString(this.fontRendererObj, this.translatedDrawStrings[2], this.width / 2 + 6, 40, 10526880);
         }
 
-        this.drawString(this.fontRendererObj, "Server config: ", this.width / 2 - 155 + 1, 155, 16777215);
+        this.drawString(this.fontRendererObj, this.translatedDrawStrings[3], this.width / 2 - 155 + 1, 155, 16777215);
         this.drawString(this.fontRendererObj, "level-type=OWG", this.width / 2 - 155 + 1, 172, 10526880);
         this.drawString(this.fontRendererObj, "generator-settings=" + this.createString(), this.width / 2 - 155 + 1, 182, 10526880);
 
@@ -280,7 +294,25 @@ public class GuiGeneratorSettings extends GuiScreen
         }
         else
         {
-            return "BETA173#";
+            return ConfigOWG.defaultGen;
+        }
+    }
+
+    public class GuiEventHandler
+    {
+        @SubscribeEvent
+        public void initGui(InitGuiEvent.Post event)
+        {
+            if (event.gui instanceof GuiCreateWorld)
+            {
+                GuiCreateWorld gui = (GuiCreateWorld) event.gui;
+                GuiButton btnMapFeatures = ReflectionHelper.getPrivateValue(GuiCreateWorld.class, gui, "field_146325_B", "btnMapFeatures");
+                int selectedIndex = ReflectionHelper.getPrivateValue(GuiCreateWorld.class, gui, "field_146331_K", "selectedIndex");
+                if (WorldType.worldTypes[selectedIndex] == OWG.worldtype)
+                {
+                    btnMapFeatures.visible = false;
+                }
+            }
         }
     }
 }

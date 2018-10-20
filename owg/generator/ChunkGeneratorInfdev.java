@@ -50,7 +50,8 @@ public class ChunkGeneratorInfdev implements IChunkProvider
     public NoiseOctavesInfdev field_920_c;
 
     private World field_907_p;
-    private final boolean mapFeaturesEnabled;
+    public final int strongholds;
+    public final int mineshafts;
     private double field_906_q[];
     private double field_905_r[];
     private double field_904_s[];
@@ -70,7 +71,7 @@ public class ChunkGeneratorInfdev implements IChunkProvider
 
     private final boolean alpha;
 
-    public ChunkGeneratorInfdev(World world, long l, boolean isEnabled, boolean a)
+    public ChunkGeneratorInfdev(World world, long l, int infStrongholds, int infMineshafts, boolean a)
     {
         this.field_905_r = new double[256];
         this.field_904_s = new double[256];
@@ -78,7 +79,8 @@ public class ChunkGeneratorInfdev implements IChunkProvider
         this.field_902_u = new MapGenOLDCaves();
         this.field_914_i = new int[32][32];
         this.field_907_p = world;
-        this.mapFeaturesEnabled = isEnabled;
+        this.strongholds = infStrongholds;
+        this.mineshafts = infMineshafts;
         this.alpha = a;
         this.chunkManager = (ManagerOWGHell) this.field_907_p.getWorldChunkManager();
 
@@ -275,10 +277,14 @@ public class ChunkGeneratorInfdev implements IChunkProvider
         this.field_902_u.generate(this.field_907_p, i, j, chunkprimer);
         this.biomesForGeneration = this.chunkManager.loadBlockGeneratorData(this.biomesForGeneration, i * 16, j * 16, 16, 16);
 
-        if (this.mapFeaturesEnabled)
+        if (this.mineshafts == 0)
+        {
+            this.mineshaftGenerator.generate(this, this.field_907_p, i, j, chunkprimer);
+        }
+
+        if (this.strongholds == 0)
         {
             this.strongholdGenerator.generate(this, this.field_907_p, i, j, chunkprimer);
-            this.mineshaftGenerator.generate(this, this.field_907_p, i, j, chunkprimer);
         }
 
         Chunk chunk = new Chunk(this.field_907_p, chunkprimer, i, j);
@@ -422,10 +428,14 @@ public class ChunkGeneratorInfdev implements IChunkProvider
 
         MinecraftForge.EVENT_BUS.post(new PopulateChunkEvent.Pre(ichunkprovider, this.field_907_p, this.field_913_j, i, j, false));
 
-        if (this.mapFeaturesEnabled)
+        if (this.mineshafts == 0)
+        {
+            this.mineshaftGenerator.generateStructure(this.field_907_p, this.field_913_j, chunkcoordintpair);
+        }
+
+        if (this.strongholds == 0)
         {
             this.strongholdGenerator.generateStructure(this.field_907_p, this.field_913_j, chunkcoordintpair);
-            this.mineshaftGenerator.generateStructure(this.field_907_p, this.field_913_j, chunkcoordintpair);
         }
 
         for (int i1 = 0; i1 < 8; i1++)
@@ -708,10 +718,14 @@ public class ChunkGeneratorInfdev implements IChunkProvider
     @Override
     public void recreateStructures(Chunk chunk, int i, int j)
     {
-        if (this.mapFeaturesEnabled)
+        if (this.mineshafts == 0)
+        {
+            this.mineshaftGenerator.generate(this, this.field_907_p, i, j, (ChunkPrimer) null);
+        }
+
+        if (this.strongholds == 0)
         {
             this.strongholdGenerator.generate(this, this.field_907_p, i, j, (ChunkPrimer) null);
-            this.mineshaftGenerator.generate(this, this.field_907_p, i, j, (ChunkPrimer) null);
         }
     }
 }

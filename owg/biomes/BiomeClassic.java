@@ -35,7 +35,7 @@ public class BiomeClassic extends BiomeList
     public BiomeList createMutatedBiome(int p_180277_1_)
     {
         BiomeClassic biomeClassic = new BiomeClassic(p_180277_1_);
-        biomeClassic.setBiomeName("Ice Classic");
+        biomeClassic.setBiomeName("owg_Classic_Snow");
         biomeClassic.setColor(353825);
         biomeClassic.setEnableSnow();
         biomeClassic.setTemperatureRainfall(0.0F, 0.5F);

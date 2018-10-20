@@ -41,6 +41,13 @@ Features:
 
 ## CHANGELOG ##
 
+    Version 1.0.5 '20-10-2018'
+    - Added generator-settings defautl config - https://github.com/Ted80-Minecraft-Mods/Fun-World-Gen/issues/5
+    - Fixed buttons bug on gui Old World Generator Settings
+    - Revised biome support
+    - Added support for Highlands - Uncharted Territory
+    - Added more world customization options
+
     Version 1.0.4 '29-04-2018'
     - Updated to minecraft 1.8.9
     - Removed support for ExtraBiomeXL
