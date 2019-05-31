@@ -3,6 +3,8 @@ package owg.generatortype;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import owg.biomes.BiomeList;
 import owg.data.DecodeGeneratorString;
 import owg.gui.GuiGeneratorSettings;
@@ -59,6 +61,7 @@ public class GeneratorType
         return this.Creatable;
     }
 
+    @SideOnly(Side.CLIENT)
     public boolean getSettings(GuiGeneratorSettings gui)
     {
         return false;
@@ -69,6 +72,7 @@ public class GeneratorType
         return new ManagerOWGHell(BiomeList.OLDplains, 0.5F);
     }
 
+    @SideOnly(Side.CLIENT)
     public WorldChunkManager getClientWorldChunkManager(World world)
     {
         return new ManagerOWGHell(BiomeList.OLDplains, 0.5F);

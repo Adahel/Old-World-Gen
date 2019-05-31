@@ -1,3 +1,5 @@
+The language file: "en_US", does not exist, because it is hardcoded. See OWGLanguage.java. Use the example below to create new language files.
+
 generator.OWG=Old World Gen
 
 gui.title=Old World Generator Settings
@@ -23,6 +25,7 @@ owg.setting.dungeon=Dungeons
 owg.setting.stronghold=Strongholds
 owg.setting.mineshaft=Mineshafts
 owg.setting.ravine=Ravines
+owg.setting.monument=Ocean Monuments
 owg.setting.end=End portal only
 
 owg.biomes.biomes=Biomes

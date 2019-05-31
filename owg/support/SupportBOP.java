@@ -16,7 +16,7 @@ public class SupportBOP
         }
     }
 
-    public static void addBOPBiomes()
+    private static void addBOPBiomes()
     {
         System.out.println("OWG: Biomes O' Plenty support is loading");
         if (BOPBiomes.alps.isPresent())
@@ -329,6 +329,12 @@ public class SupportBOP
         {
             System.out.println("Biomes O' Plenty biome added: " + BOPBiomes.woodland.get().biomeName);
             Support.biomes_hot.add(BOPBiomes.xeric_shrubland.get());
+        }
+
+        if (BOPBiomes.gravel_beach.isPresent())
+        {
+            System.out.println("Biomes O' Plenty biome added: " + BOPBiomes.gravel_beach.get().biomeName);
+            Support.gravelBeach = BOPBiomes.gravel_beach.get();
         }
         System.out.println("OWG: Biomes O' Plenty support was loaded");
     }

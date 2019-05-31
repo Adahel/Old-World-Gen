@@ -1,0 +1,50 @@
+generator.OWG=Régi világ generátor
+
+gui.title=Régi világgenerátor beállítások
+gui.selectGenerator=Válassz egy világgenerátort:
+gui.generatorSettings=Generátor beállítások:
+gui.serverConfig=Szerver konfiguráció:
+gui.copystring=Generátor beállítások másolása vágólapra
+
+owg.setting.size=Méret
+owg.setting.small=Kicsi
+owg.setting.default=Alapértelmezett
+owg.setting.large=Nagy
+owg.setting.snow=Hóvilág
+owg.setting.water=Víz
+owg.setting.on=BE
+owg.setting.off=KI
+owg.setting.theme=Téma
+owg.setting.type=Típus
+owg.setting.layer=Réteg
+owg.setting.village=Falvak
+owg.setting.temple=Templomok
+owg.setting.dungeon=Dungeonokban
+owg.setting.stronghold=Erődítménye
+owg.setting.mineshaft=Bányaakna
+owg.setting.ravine=Szakadékok
+owg.setting.monument=Óceáni Műemlékek
+owg.setting.end=Vége Portál csak
+
+owg.biomes.biomes=Biomes
+owg.biomes.original=Eredeti
+owg.biomes.vanilla=Vanília
+owg.biomes.all=Vanília + Módosítás
+
+owg.theme.default=Alapértelmezett
+owg.theme.snow=Hó
+owg.theme.jungle=Dzsungel
+owg.theme.tropical=Trópikus
+owg.theme.paradise=Paradicsom
+owg.theme.hell=Pokol
+owg.theme.woods=Erdő
+
+owg.type.island=Sziget
+owg.type.floating=Lebegő
+owg.type.inland=Belföld
+
+owg.BETA173=Béta 1.7.3
+owg.ALPHA12=Alfa 1.2.0
+owg.ALPHA11=Alfa 1.1.0
+owg.INFDEV=Infdev
+owg.INDEV=Indev

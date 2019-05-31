@@ -7,7 +7,6 @@ package owg.deco;
 import java.util.Random;
 
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import owg.OWGGenHelper;
 
@@ -36,7 +35,7 @@ public class OldGenCactus extends WorldGenerator
             int l1 = 1 + random.nextInt(random.nextInt(3) + 1);
             for (int i2 = 0; i2 < l1; i2++)
             {
-                if (Blocks.cactus.canBlockStay(world, new BlockPos(i1, j1 + i2, k1)))
+                if (OWGGenHelper.canBlockStay(world, i1, j1 + i2, k1, Blocks.cactus))
                 {
                     OWGGenHelper.setBlock(world, i1, j1 + i2, k1, Blocks.cactus);
                 }

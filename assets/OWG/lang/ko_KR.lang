@@ -1,0 +1,50 @@
+generator.OWG=올드 월드 겐
+
+gui.title=올드 월드 제너레이터 설정
+gui.selectGenerator=월드생성방식을 선택하세요:
+gui.generatorSettings=월드생성 설정:
+gui.serverConfig=서버 구성 :
+gui.copystring=월드생성 설정을 클립보드에 복사했습니다.
+
+owg.setting.size=크기
+owg.setting.small=작음
+owg.setting.default=기본
+owg.setting.large=큼
+owg.setting.snow=설원
+owg.setting.water=물
+owg.setting.on=에
+owg.setting.off=떨어져서
+owg.setting.theme=주제
+owg.setting.type=타입
+owg.setting.layer=레이어
+owg.setting.village=마을
+owg.setting.temple=사원
+owg.setting.dungeon=지하 감옥
+owg.setting.stronghold=포르 탈 레자
+owg.setting.mineshaft=광산
+owg.setting.ravine=협곡
+owg.setting.monument=오션 기념물
+owg.setting.end=최종 포털 만
+
+owg.biomes.biomes=바이오 메스
+owg.biomes.original=기발한
+owg.biomes.vanilla=바닐라
+owg.biomes.all=바닐라 + 가감
+
+owg.theme.default=기본
+owg.theme.snow=설원
+owg.theme.jungle=정글
+owg.theme.tropical=열대
+owg.theme.paradise=낙원
+owg.theme.hell=지옥
+owg.theme.woods=나무
+
+owg.type.island=섬
+owg.type.floating=떠 있는
+owg.type.inland=섬
+
+owg.BETA173=Beta 1.7.3
+owg.ALPHA12=Alpha 1.2.0
+owg.ALPHA11=Alpha 1.1.0
+owg.INFDEV=Infdev
+owg.INDEV=Indev

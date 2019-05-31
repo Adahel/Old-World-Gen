@@ -1,0 +1,50 @@
+generator.OWG=Old World Gen
+
+gui.title=Old World Generator Einstellungen
+gui.selectGenerator=Weltgenerator auswählen:
+gui.generatorSettings=Generatoreinstellungen:
+gui.serverConfig=Serverkonfiguration:
+gui.copystring=Generatoreinstellungen in die Zwischenablage kopieren
+
+owg.setting.size=Größe
+owg.setting.small=Klein
+owg.setting.default=Normal
+owg.setting.large=Normal
+owg.setting.snow=Schneewelt
+owg.setting.water=Water
+owg.setting.on=AN
+owg.setting.off=AUS
+owg.setting.theme=Thema
+owg.setting.type=Typ
+owg.setting.layer=Ebenen
+owg.setting.village=Dörfer
+owg.setting.temple=Tempel
+owg.setting.dungeon=Verlies
+owg.setting.stronghold=Hochburg
+owg.setting.mineshaft=Minenschächte
+owg.setting.ravine=Schluchten
+owg.setting.monument=Ozean-Denkmäler
+owg.setting.end=End-portal nur
+
+owg.biomes.biomes=Biomes
+owg.biomes.original=Original
+owg.biomes.vanilla=Vanille
+owg.biomes.all=Vanille + Änderung
+
+owg.theme.default=Standard
+owg.theme.snow=Schnee
+owg.theme.jungle=Tropen
+owg.theme.tropical=Tropisch
+owg.theme.paradise=Paradies
+owg.theme.hell=Wälder
+owg.theme.woods=Wälder
+
+owg.type.island=Insel
+owg.type.floating=Schwebend
+owg.type.inland=Festland
+
+owg.BETA173=Beta 1.7.3
+owg.ALPHA12=Alpha 1.2.0
+owg.ALPHA11=Alpha 1.1.0
+owg.INFDEV=Infdev
+owg.INDEV=Indev

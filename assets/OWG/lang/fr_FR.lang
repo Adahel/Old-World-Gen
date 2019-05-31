@@ -1,0 +1,50 @@
+generator.OWG=Vieux Générateur du monde
+
+gui.title=Vieux Générateur du monde Paramètres
+gui.selectGenerator=Choisir un générateur de monde:
+gui.generatorConfiguration avancée:
+gui.serverConfig=Configuration du serveur:
+gui.copystring=Copier les options dans le presse-papiers
+
+owg.setting.size=Taille
+owg.setting.small=Petit
+owg.setting.default=Moyen
+owg.setting.large=Grand
+owg.setting.snow=Monde Enneigé
+owg.setting.water=Eau
+owg.setting.on=SUR
+owg.setting.off=DE
+owg.setting.theme=Thème
+owg.setting.type=Type
+owg.setting.layer=Couche
+owg.setting.village=Villages
+owg.setting.temple=Temples
+owg.setting.dungeon=Donjons
+owg.setting.stronghold=Forteresses
+owg.setting.mineshaft=Puits de Mine
+owg.setting.ravine=Ravins
+owg.setting.monument=Monuments de l'océan
+owg.setting.end=Portail final seulement
+
+owg.biomes.biomes=Biomes
+owg.biomes.original=Original
+owg.biomes.vanilla=Vanille
+owg.biomes.all=Vanille + Mods
+
+owg.theme.default=Par défaut
+owg.theme.snow=Enneigé
+owg.theme.jungle=Jungle
+owg.theme.tropical=Tropical
+owg.theme.paradise=Paradisiaque
+owg.theme.hell=Enfers
+owg.theme.woods=Forêts
+
+owg.type.island=Île
+owg.type.floating=Flottant
+owg.type.inland=Terres
+
+owg.BETA173=Beta 1.7.3
+owg.ALPHA12=Alpha 1.2.0
+owg.ALPHA11=Alpha 1.1.0
+owg.INFDEV=Infdev
+owg.INDEV=Indev

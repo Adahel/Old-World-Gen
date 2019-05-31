@@ -14,6 +14,7 @@ public class Support
     public static List<BiomeGenBase> biomes_wet;
     public static List<BiomeGenBase> biomes_hot;
     public static List<BiomeGenBase> biomes_small;
+    public static BiomeGenBase gravelBeach;
 
     public static void init()
     {
@@ -38,6 +39,16 @@ public class Support
         if (Loader.isModLoaded("Thaumcraft"))
         {
             SupportTC.init();
+        }
+
+        if (Loader.isModLoaded("abyssalcraft"))
+        {
+            SupportAC.init();
+        }
+
+        if (Loader.isModLoaded("sugiforest"))
+        {
+            SupportSF.init();
         }
     }
 

@@ -272,9 +272,10 @@ public class ChunkGeneratorAlpha implements IChunkProvider
         }
     }
 
-    public Chunk loadChunk(int i, int j)
+    @Override
+    public Chunk provideChunk(BlockPos blockPosIn)
     {
-        return this.provideChunk(i, j);
+        return this.provideChunk(blockPosIn.getX() >> 4, blockPosIn.getZ() >> 4);
     }
 
     @Override
@@ -695,19 +696,13 @@ public class ChunkGeneratorAlpha implements IChunkProvider
     }
 
     @Override
-    public Chunk provideChunk(BlockPos blockPosIn)
-    {
-        return this.provideChunk(blockPosIn.getX() >> 4, blockPosIn.getZ() >> 4);
-    }
-
-    @Override
-    public boolean func_177460_a(IChunkProvider p_177460_1_, Chunk p_177460_2_, int p_177460_3_, int p_177460_4_)
+    public boolean func_177460_a(IChunkProvider ichunkprovider, Chunk chunkIn, int x, int z)
     {
         return false;
     }
 
     @Override
-    public boolean saveChunks(boolean p_73151_1_, IProgressUpdate progressCallback)
+    public boolean saveChunks(boolean flag, IProgressUpdate progressCallback)
     {
         return true;
     }

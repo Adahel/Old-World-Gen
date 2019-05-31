@@ -142,13 +142,13 @@ public class BiomeBeta extends BiomeList
     }
 
     @SideOnly(Side.CLIENT)
-    public float getFTemp(int p_150564_1_, int p_150564_2_, int p_150564_3_)
+    public float getFTemp(int i, int j, int k)
     {
-        if (p_150564_2_ > 64)
+        if (j > 64)
         {
-            float var4 = (float) temperatureNoise.func_151601_a((double) p_150564_1_ * 1.0D / 8.0D,
-                    (double) p_150564_3_ * 1.0D / 8.0D) * 4.0F;
-            return this.temperature - (var4 + (float) p_150564_2_ - 64.0F) * 0.05F / 30.0F;
+            float var4 = (float) temperatureNoise.func_151601_a((double) i * 1.0D / 8.0D,
+                    (double) k * 1.0D / 8.0D) * 4.0F;
+            return this.temperature - (var4 + (float) j - 64.0F) * 0.05F / 30.0F;
         }
         else
         {

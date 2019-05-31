@@ -4,7 +4,6 @@ import java.util.Random;
 
 import net.minecraft.block.BlockBush;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import owg.OWGGenHelper;
 
@@ -53,7 +52,7 @@ public class OldGenFlowers extends WorldGenerator
         }
         else
         {
-            return world.getLight(new BlockPos(i, j, k)) < 13 && OWGGenHelper.getBlock(world, i, j - 1, k).isOpaqueCube();
+            return OWGGenHelper.getLightValue(world, i, j, k) < 13 && OWGGenHelper.getBlock(world, i, j - 1, k).isOpaqueCube();
         }
     }
 }

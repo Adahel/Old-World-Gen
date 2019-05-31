@@ -38,16 +38,25 @@ Features:
     10. Set level-type to "OWG".
     11. Paste the generator settings at "generator-settings=".
     12. Start your server.
-
+    
 ## CHANGELOG ##
-
+    Version 1.0.6 '31-05-2019'
+    - Fixed torches bug from Indev House
+    - Added y emulator. Thanks Nicholai
+    - Added Deepen Ocean. Thanks Nicholai
+    - Added Ocean Monument generator
+    - Added new biomes: Ocean, Beach, Gravel Beach (Biomes O' Plenty only)
+    - Added new lang files
+    - Added support for SugiForest mod
+    - Added support for AbyssalCraft mod
+    
     Version 1.0.5 '20-10-2018'
     - Added generator-settings defautl config - https://github.com/Ted80-Minecraft-Mods/Fun-World-Gen/issues/5
     - Fixed buttons bug on gui Old World Generator Settings
     - Revised biome support
     - Added support for Highlands - Uncharted Territory
     - Added more world customization options
-
+    
     Version 1.0.4 '29-04-2018'
     - Updated to minecraft 1.8.9
     - Removed support for ExtraBiomeXL

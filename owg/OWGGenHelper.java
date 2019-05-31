@@ -2,6 +2,7 @@ package owg;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockCactus;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -37,14 +38,32 @@ public final class OWGGenHelper
         return world.getTileEntity(new BlockPos(x, y, z));
     }
 
+    public static int getLightValue(World world, int x, int y, int z)
+    {
+        return world.getLight(new BlockPos(x, y, z));
+    }
+
     public static int getSavedLightValue(World world, EnumSkyBlock type, int x, int y, int z)
     {
         return world.getLightFor(type, new BlockPos(x, y, z));
     }
 
-    public static boolean canBlockStay(World world, int x, int y, int z, BlockBush block)
+    public static boolean canPlaceBlockAt(World world, int x, int y, int z, Block block)
     {
-        return canBlockStay(world, x, y, z, block, block.getDefaultState());
+        return block.canPlaceBlockAt(world, new BlockPos(x, y, z));
+    }
+
+    public static boolean canBlockStay(World world, int x, int y, int z, Block block)
+    {
+        if (block instanceof BlockBush)
+        {
+            return canBlockStay(world, x, y, z, (BlockBush) block, block.getDefaultState());
+        }
+        else if (block instanceof BlockCactus)
+        {
+            return ((BlockCactus) block).canBlockStay(world, new BlockPos(x, y, z));
+        }
+        return false;
     }
 
     public static boolean canBlockStay(World world, int x, int y, int z, BlockBush block, IBlockState state)

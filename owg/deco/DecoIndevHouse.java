@@ -2,7 +2,9 @@ package owg.deco;
 
 import java.util.Random;
 
+import net.minecraft.block.BlockTorch;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import owg.OWGGenHelper;
 
@@ -89,8 +91,8 @@ public class DecoIndevHouse extends WorldGenerator
             OWGGenHelper.setBlockWithNotify(worldIn, x - 3, y + 1, z, Blocks.air);
             OWGGenHelper.setBlockWithNotify(worldIn, x - 4, y, z, Blocks.air);
             OWGGenHelper.setBlockWithNotify(worldIn, x - 4, y + 1, z, Blocks.air);
-            OWGGenHelper.setBlockWithNotify(worldIn, x, y + 1, z + 2, Blocks.torch);
-            OWGGenHelper.setBlockWithNotify(worldIn, x, y + 1, z - 2, Blocks.torch);
+            OWGGenHelper.setBlockState(worldIn, x, y + 1, z + 2, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH));
+            OWGGenHelper.setBlockState(worldIn, x, y + 1, z - 2, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.SOUTH));
         }
         else if (OWGGenHelper.isAirBlock(worldIn, x + 4, y + 1, z) && !OWGGenHelper.isAirBlock(worldIn, x + 4, y - 1, z)
                 || !OWGGenHelper.isAirBlock(worldIn, x + 4, y - 2, z))
@@ -99,8 +101,8 @@ public class DecoIndevHouse extends WorldGenerator
             OWGGenHelper.setBlockWithNotify(worldIn, x + 3, y + 1, z, Blocks.air);
             OWGGenHelper.setBlockWithNotify(worldIn, x + 4, y, z, Blocks.air);
             OWGGenHelper.setBlockWithNotify(worldIn, x + 4, y + 1, z, Blocks.air);
-            OWGGenHelper.setBlockWithNotify(worldIn, x, y + 1, z + 2, Blocks.torch);
-            OWGGenHelper.setBlockWithNotify(worldIn, x, y + 1, z - 2, Blocks.torch);
+            OWGGenHelper.setBlockState(worldIn, x, y + 1, z + 2, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH));
+            OWGGenHelper.setBlockState(worldIn, x, y + 1, z - 2, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.SOUTH));
         }
         else if (OWGGenHelper.isAirBlock(worldIn, x, y + 1, z - 4) && !OWGGenHelper.isAirBlock(worldIn, x, y - 1, z - 4)
                 || !OWGGenHelper.isAirBlock(worldIn, x, y - 2, z - 4))
@@ -109,8 +111,8 @@ public class DecoIndevHouse extends WorldGenerator
             OWGGenHelper.setBlockWithNotify(worldIn, x, y + 1, z - 3, Blocks.air);
             OWGGenHelper.setBlockWithNotify(worldIn, x, y, z - 4, Blocks.air);
             OWGGenHelper.setBlockWithNotify(worldIn, x, y + 1, z - 4, Blocks.air);
-            OWGGenHelper.setBlockWithNotify(worldIn, x + 2, y + 1, z, Blocks.torch);
-            OWGGenHelper.setBlockWithNotify(worldIn, x - 2, y + 1, z, Blocks.torch);
+            OWGGenHelper.setBlockState(worldIn, x + 2, y + 1, z, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.WEST));
+            OWGGenHelper.setBlockState(worldIn, x - 2, y + 1, z, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.EAST));
         }
         else if (OWGGenHelper.isAirBlock(worldIn, x, y + 1, z + 4) && !OWGGenHelper.isAirBlock(worldIn, x, y - 1, z + 4)
                 || !OWGGenHelper.isAirBlock(worldIn, x, y - 2, z + 4))
@@ -119,8 +121,8 @@ public class DecoIndevHouse extends WorldGenerator
             OWGGenHelper.setBlockWithNotify(worldIn, x, y + 1, z + 3, Blocks.air);
             OWGGenHelper.setBlockWithNotify(worldIn, x, y, z + 4, Blocks.air);
             OWGGenHelper.setBlockWithNotify(worldIn, x, y + 1, z + 4, Blocks.air);
-            OWGGenHelper.setBlockWithNotify(worldIn, x + 2, y + 1, z, Blocks.torch);
-            OWGGenHelper.setBlockWithNotify(worldIn, x - 2, y + 1, z, Blocks.torch);
+            OWGGenHelper.setBlockState(worldIn, x + 2, y + 1, z, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.WEST));
+            OWGGenHelper.setBlockState(worldIn, x - 2, y + 1, z, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.EAST));
         }
         else
         {
@@ -128,8 +130,8 @@ public class DecoIndevHouse extends WorldGenerator
             OWGGenHelper.setBlockWithNotify(worldIn, x - 3, y + 1, z, Blocks.air);
             OWGGenHelper.setBlockWithNotify(worldIn, x - 4, y, z, Blocks.air);
             OWGGenHelper.setBlockWithNotify(worldIn, x - 4, y + 1, z, Blocks.air);
-            OWGGenHelper.setBlockWithNotify(worldIn, x, y + 1, z + 2, Blocks.torch);
-            OWGGenHelper.setBlockWithNotify(worldIn, x, y + 1, z - 2, Blocks.torch);
+            OWGGenHelper.setBlockState(worldIn, x, y + 1, z + 2, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH));
+            OWGGenHelper.setBlockState(worldIn, x, y + 1, z - 2, Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.SOUTH));
         }
         return true;
     }

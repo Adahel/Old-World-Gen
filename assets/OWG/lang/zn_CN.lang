@@ -1,0 +1,50 @@
+generator.OWG=旧世界发电机
+
+gui.title=旧世界发电机设置
+gui.selectGenerator=选择一个世界生成器:
+gui.generatorSettings=生成器设置:
+gui.serverConfig=服务器配置:
+gui.copystring=复制生成设定到剪切板上
+
+owg.setting.size=尺寸
+owg.setting.small=小
+owg.setting.default=中
+owg.setting.large=大
+owg.setting.snow=雪世界
+owg.setting.water=水
+owg.setting.on=开
+owg.setting.off=关
+owg.setting.theme=主题
+owg.setting.type=类型
+owg.setting.layer=地层
+owg.setting.village=村
+owg.setting.temple=寺庙
+owg.setting.dungeon=土牢
+owg.setting.stronghold=据点
+owg.setting.mineshaft=废弃矿井
+owg.setting.ravine=山沟
+owg.setting.monument=海底遗迹
+owg.setting.end=末地传送门只要
+
+owg.biomes.biomes=生物群落
+owg.biomes.original=原版的
+owg.biomes.vanilla=香草
+owg.biomes.all=香草 + 修改
+
+owg.theme.default=普通
+owg.theme.snow=雪世界
+owg.theme.jungle=丛林
+owg.theme.tropical=热带地区
+owg.theme.paradise=天堂
+owg.theme.hell=地狱
+owg.theme.woods=树林
+
+owg.type.island=岛屿
+owg.type.floating=浮岛
+owg.type.inland=岛屿
+
+owg.BETA173=Beta 1.7.3
+owg.ALPHA12=Alpha 1.2.0
+owg.ALPHA11=Alpha 1.1.0
+owg.INFDEV=Infdev
+owg.INDEV=Indev
