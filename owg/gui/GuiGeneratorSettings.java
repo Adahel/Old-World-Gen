@@ -6,19 +6,16 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiCreateWorld;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.StatCollector;
-import net.minecraft.world.WorldType;
-import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import owg.OWG;
 import owg.config.ConfigOWG;
 import owg.data.DecodeGeneratorString;
 import owg.generatortype.GeneratorType;
 
+@SideOnly(Side.CLIENT)
 public class GuiGeneratorSettings extends GuiScreen
 {
-    private final GuiEventHandler eventHandler;
     private final GuiCreateWorld createWorldGui;
 
     public GuiButton BUTTON_DONE;
@@ -37,7 +34,6 @@ public class GuiGeneratorSettings extends GuiScreen
 
     public GuiGeneratorSettings(GuiCreateWorld gcw, String gs)
     {
-        this.eventHandler = new GuiEventHandler();
         this.createWorldGui = gcw;
         this.decodebool = true;
 
@@ -85,12 +81,10 @@ public class GuiGeneratorSettings extends GuiScreen
         if (button.id == 0) // DONE
         {
             this.createWorldGui.chunkProviderSettingsJson = this.createString();
-            MinecraftForge.EVENT_BUS.register(this.eventHandler);
             this.mc.displayGuiScreen(this.createWorldGui);
         }
         else if (button.id == 1) // CANCEL
         {
-            MinecraftForge.EVENT_BUS.register(this.eventHandler);
             this.mc.displayGuiScreen(this.createWorldGui);
         }
         else if (button.id == 2) // COPY SETTINGS
@@ -144,7 +138,7 @@ public class GuiGeneratorSettings extends GuiScreen
         }
 
         this.drawString(this.fontRendererObj, this.translatedDrawStrings[3], this.width / 2 - 155 + 1, 155, 16777215);
-        this.drawString(this.fontRendererObj, "level-type=OWG", this.width / 2 - 155 + 1, 172, 10526880);
+        this.drawString(this.fontRendererObj, "level-type=" + OWG.MODID, this.width / 2 - 155 + 1, 172, 10526880);
         this.drawString(this.fontRendererObj, "generator-settings=" + this.createString(), this.width / 2 - 155 + 1, 182, 10526880);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -295,24 +289,6 @@ public class GuiGeneratorSettings extends GuiScreen
         else
         {
             return ConfigOWG.defaultGen;
-        }
-    }
-
-    public class GuiEventHandler
-    {
-        @SubscribeEvent
-        public void initGui(InitGuiEvent.Post event)
-        {
-            if (event.gui instanceof GuiCreateWorld)
-            {
-                GuiCreateWorld gui = (GuiCreateWorld) event.gui;
-                GuiButton btnMapFeatures = ReflectionHelper.getPrivateValue(GuiCreateWorld.class, gui, "field_146325_B", "btnMapFeatures");
-                int selectedIndex = ReflectionHelper.getPrivateValue(GuiCreateWorld.class, gui, "field_146331_K", "selectedIndex");
-                if (WorldType.worldTypes[selectedIndex] == OWG.worldtype)
-                {
-                    btnMapFeatures.visible = false;
-                }
-            }
         }
     }
 }

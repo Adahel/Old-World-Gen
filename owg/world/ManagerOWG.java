@@ -1,9 +1,15 @@
 package owg.world;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -20,19 +26,21 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import owg.biomes.BiomeList;
 import owg.noise.OldNoiseGeneratorOctaves2;
+import owg.simulator.ChunkSimulatorBeta;
 import owg.support.Support;
 import owg.util.CellNoise;
 import owg.util.PerlinNoise;
 
-public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBase
+public class ManagerOWG extends WorldChunkManager
 {
-    public static List<BiomeGenBase> allowedBiomes = Lists.newArrayList(BiomeGenBase.forest, BiomeGenBase.plains, BiomeGenBase.taiga, BiomeGenBase.taigaHills,
-            BiomeGenBase.forestHills, BiomeGenBase.jungle, BiomeGenBase.jungleHills);
-    public static List<BiomeGenBase> allowedBiomesBeta = Lists.newArrayList(BiomeList.OLDforest, BiomeList.OLDplains, BiomeList.OLDtaiga,
+    public static List<BiomeGenBase> allowedBiomes = Lists.<BiomeGenBase> newArrayList(BiomeGenBase.forest, BiomeGenBase.plains, BiomeGenBase.taiga,
+            BiomeGenBase.taigaHills, BiomeGenBase.forestHills, BiomeGenBase.jungle, BiomeGenBase.jungleHills);
+    public static List<BiomeGenBase> allowedBiomesBeta = Lists.<BiomeGenBase> newArrayList(BiomeList.OLDforest, BiomeList.OLDplains, BiomeList.OLDtaiga,
             BiomeList.OLDrainforest, BiomeList.OLDseasonalForest, BiomeList.OLDshrubland, BiomeList.OLDtundra);
     private ManagerOWG genBiomes;
     /** The biome list. */
     private BiomeCache biomeCache;
+    private World worldObj;
     private List<BiomeGenBase> biomesToSpawnIn;
     private OldNoiseGeneratorOctaves2 field_4194_e;
     private OldNoiseGeneratorOctaves2 field_4193_f;
@@ -47,6 +55,7 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
     public List<BiomeGenBase> biomeList_hot;
     public List<BiomeGenBase> biomeList_wet;
     public List<BiomeGenBase> biomeList_small;
+    public BiomeGenBase gravelBeach;
     public int biomeListSnowLength;
     public int biomeListColdLength;
     public int biomeListHotLength;
@@ -54,6 +63,7 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
     public int biomeListSmallLength;
     public int biomeSetting;
     public boolean isSmallEnabled;
+    public boolean isGravelBeachEnabled;
 
     private PerlinNoise perlin;
     private CellNoise biomecell;
@@ -65,7 +75,7 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
         this.biomesToSpawnIn = Lists.<BiomeGenBase> newArrayList();
     }
 
-    public ManagerOWG(long seed, WorldType p_i45744_3_, String p_i45744_4_)
+    public ManagerOWG(long seed, WorldType worldTypeIn, String options)
     {
         this();
     }
@@ -78,6 +88,7 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
     public ManagerOWG(World worldIn, boolean isRemote, int biomes)
     {
         this(worldIn);
+        this.worldObj = worldIn;
         long seed = worldIn.getSeed();
 
         if (isRemote)
@@ -102,8 +113,6 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
                 this.biomeList_snow.add(BiomeGenBase.coldTaigaHills);
                 this.biomeList_snow.add(BiomeGenBase.icePlains);
                 this.biomeList_snow.add(BiomeGenBase.iceMountains);
-                this.biomeList_snow.add(BiomeGenBase.coldTaiga);
-                this.biomeList_snow.add(BiomeGenBase.coldTaigaHills);
 
                 this.biomeList_cold.add(BiomeGenBase.plains);
                 this.biomeList_cold.add(BiomeGenBase.extremeHills);
@@ -125,15 +134,12 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
                 this.biomeList_hot.add(BiomeGenBase.mesa);
                 this.biomeList_hot.add(BiomeGenBase.mesaPlateau_F);
                 this.biomeList_hot.add(BiomeGenBase.mesaPlateau);
-                this.biomeList_hot.add(BiomeGenBase.savanna);
-                this.biomeList_hot.add(BiomeGenBase.savannaPlateau);
 
                 this.biomeList_wet.add(BiomeGenBase.swampland);
                 this.biomeList_wet.add(BiomeGenBase.jungle);
                 this.biomeList_wet.add(BiomeGenBase.jungleHills);
                 this.biomeList_wet.add(BiomeGenBase.jungleEdge);
                 this.biomeList_wet.add(BiomeGenBase.roofedForest);
-                this.biomeList_wet.add(BiomeGenBase.jungleEdge);
             }
             else if (biomes == 2)
             {
@@ -142,6 +148,7 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
                 this.biomeList_hot.addAll(Support.biomes_hot);
                 this.biomeList_wet.addAll(Support.biomes_wet);
                 this.biomeList_small.addAll(Support.biomes_small);
+                this.gravelBeach = Support.gravelBeach;
             }
 
             if (biomes > 0)
@@ -158,6 +165,11 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
                 {
                     this.isSmallEnabled = true;
                 }
+
+                if (this.gravelBeach != null)
+                {
+                    this.isGravelBeachEnabled = true;
+                }
             }
             else
             {
@@ -166,8 +178,7 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
         }
     }
 
-    @Override
-    public int[] getInts(int areaX, int areaY, int areaWidth, int areaHeight)
+    public int[] getInts(int areaX, int areaY, int areaWidth, int areaHeight, boolean useDeepOcean)
     {
         int[] aint = IntCache.getIntCache(areaWidth * areaHeight);
 
@@ -226,10 +237,17 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
             int k11;
             int i2 = 0;
             float offX, offY;
+            ChunkSimulatorBeta chunksimulatorbeta = new ChunkSimulatorBeta(this, this.worldObj.getSeed());
+            List<BiomeGenBase> list = Lists.<BiomeGenBase> newArrayList();
+            list.addAll(this.biomeList_cold);
+            list.addAll(this.biomeList_hot);
+            list.addAll(this.biomeList_wet);
+            list.addAll(this.biomeList_small);
             for (int j11 = 0; j11 < areaWidth; j11++)
             {
                 for (k11 = 0; k11 < areaHeight; k11++)
                 {
+                    BlockPos blockpos = new BlockPos(j11 + areaX, 0, k11 + areaY);
                     offX = this.perlin.noise2((areaX + j11) / 30F, (areaY + k11) / 30F) * 80 + this.perlin.noise2((areaX + j11) / 7F, (areaY + k11) / 7F) * 20;
                     offY = this.perlin.noise2((areaX + j11 + 1000) / 30F, (areaY + k11) / 30F) * 80
                             + this.perlin.noise2((areaX + j11 - 1000) / 7F, (areaY + k11) / 7F) * 20;
@@ -240,36 +258,116 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
                         h = (this.biomecell.noise((areaX + j11 + offX + 2000) / 180D, (areaY + k11 - offY) / 180D, 1D) * 0.5f) + 0.5f;
                         h = h < 0f ? 0f : h >= 0.9999999f ? 0.9999999f : h;
                         h *= this.biomeListSmallLength;
-                        aint[i2++] = this.biomeList_small.get((int) (h)).biomeID;
+                        aint[i2] = this.biomeList_small.get((int) (h)).biomeID;
                     }
                     else if (c < 0.25f)
                     {
                         h = (this.biomecell.noise((areaX + j11 + offX + 2000) / 180D, (areaY + k11 - offY) / 180D, 1D) * 0.5f) + 0.5f;
                         h = h < 0f ? 0f : h >= 0.9999999f ? 0.9999999f : h;
                         h *= this.biomeListSnowLength;
-                        aint[i2++] = this.biomeList_snow.get((int) (h)).biomeID;
+                        aint[i2] = this.biomeList_snow.get((int) (h)).biomeID;
                     }
                     else if (c < 0.5f)
                     {
                         h = (this.biomecell.noise((areaX + j11 + offX + 3000) / 180D, (areaY + k11 - offY) / 180D, 1D) * 0.5f) + 0.5f;
                         h = h < 0f ? 0f : h >= 0.9999999f ? 0.9999999f : h;
                         h *= this.biomeListColdLength;
-                        aint[i2++] = this.biomeList_cold.get((int) (h)).biomeID;
+                        aint[i2] = this.biomeList_cold.get((int) (h)).biomeID;
                     }
                     else if (c < 0.75f)
                     {
                         h = (this.biomecell.noise((areaX + j11 + offX + 4000) / 180D, (areaY + k11 - offY) / 180D, 1D) * 0.5f) + 0.5f;
                         h = h < 0f ? 0f : h >= 0.9999999f ? 0.9999999f : h;
                         h *= this.biomeListHotLength;
-                        aint[i2++] = this.biomeList_hot.get((int) (h)).biomeID;
+                        aint[i2] = this.biomeList_hot.get((int) (h)).biomeID;
                     }
                     else
                     {
                         h = (this.biomecell.noise((areaX + j11 + offX + 5000) / 180D, (areaY + k11 - offY) / 180D, 1D) * 0.5f) + 0.5f;
                         h = h < 0f ? 0f : h >= 0.9999999f ? 0.9999999f : h;
                         h *= this.biomeListWetLength;
-                        aint[i2++] = this.biomeList_wet.get((int) (h)).biomeID;
+                        aint[i2] = this.biomeList_wet.get((int) (h)).biomeID;
                     }
+
+                    Pair<Integer, Boolean> pair = chunksimulatorbeta.getSimulatedTerrain(blockpos);
+                    if (useDeepOcean)
+                    {
+                        if (pair.getLeft() < 59)
+                        {
+                            if (!pair.getRight())
+                            {
+                                aint[i2] = BiomeGenBase.deepOcean.biomeID;
+                            }
+                            else
+                            {
+                                for (BiomeGenBase biomegenbase : this.biomeList_snow)
+                                {
+                                    if (aint[i2] == biomegenbase.biomeID)
+                                    {
+                                        aint[i2] = BiomeGenBase.frozenOcean.biomeID;
+                                    }
+                                }
+                                for (BiomeGenBase biomegenbase : list)
+                                {
+                                    if (aint[i2] == biomegenbase.biomeID)
+                                    {
+                                        aint[i2] = BiomeGenBase.ocean.biomeID;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (pair.getLeft() < 63)
+                        {
+                            for (BiomeGenBase biomegenbase : this.biomeList_snow)
+                            {
+                                if (aint[i2] == biomegenbase.biomeID)
+                                {
+                                    aint[i2] = BiomeGenBase.frozenOcean.biomeID;
+                                }
+                            }
+                            for (BiomeGenBase biomegenbase : list)
+                            {
+                                if (aint[i2] == biomegenbase.biomeID)
+                                {
+                                    aint[i2] = BiomeGenBase.ocean.biomeID;
+                                }
+                            }
+                        }
+                        else if (pair.getLeft() >= 63 && pair.getLeft() <= 65)
+                        {
+                            if (pair.getLeft() >= 63)
+                            {
+                                if (chunksimulatorbeta.getSimulatedBeach(blockpos))
+                                {
+                                    for (BiomeGenBase biomegenbase : this.biomeList_snow)
+                                    {
+                                        if (aint[i2] == biomegenbase.biomeID)
+                                        {
+                                            aint[i2] = BiomeGenBase.coldBeach.biomeID;
+                                        }
+                                    }
+                                    for (BiomeGenBase biomegenbase : list)
+                                    {
+                                        if (aint[i2] == biomegenbase.biomeID)
+                                        {
+                                            aint[i2] = BiomeGenBase.beach.biomeID;
+                                        }
+                                    }
+                                }
+                                if (this.isGravelBeachEnabled && pair.getLeft() > 63)
+                                {
+                                    if (chunksimulatorbeta.getSimulatedGravel(blockpos))
+                                    {
+                                        aint[i2] = this.gravelBeach.biomeID;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    i2++;
                 }
             }
         }
@@ -282,13 +380,11 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
         return this.biomesToSpawnIn;
     }
 
-    @Override
     public BiomeGenBase getBiomeGenAtChunkCoord(ChunkCoordIntPair chunkcoordintpair)
     {
         return this.getBiomeGenAt(chunkcoordintpair.chunkXPos << 4, chunkcoordintpair.chunkZPos << 4);
     }
 
-    @Override
     public BiomeGenBase getBiomeGenAt(int x, int z)
     {
         return this.getBiomeGenerator(new BlockPos(x, 64, z));
@@ -309,7 +405,6 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
         return this.biomeCache.func_180284_a(pos.getX(), pos.getZ(), biomeGenBaseIn);
     }
 
-    @Override
     public double[] getTemperatures(double listToReuse[], int x, int z, int width, int length)
     {
         IntCache.resetIntCache();
@@ -360,7 +455,7 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
             listToReuse = new float[width * length];
         }
 
-        int[] aint = this.genBiomes.getInts(x, z, width, length);
+        int[] aint = this.genBiomes.getInts(x, z, width, length, false);
 
         for (int i = 0; i < width * length; ++i)
         {
@@ -397,9 +492,9 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
      */
     @Override
     @SideOnly(Side.CLIENT)
-    public float getTemperatureAtHeight(float p_76939_1_, int p_76939_2_)
+    public float getTemperatureAtHeight(float temperature, int height)
     {
-        return p_76939_1_;
+        return temperature;
     }
 
     /**
@@ -415,7 +510,7 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
             biomes = new BiomeGenBase[width * height];
         }
 
-        int[] aint = this.genBiomes.getInts(x, z, width, height);
+        int[] aint = this.genBiomes.getInts(x, z, width, height, false);
 
         try
         {
@@ -470,7 +565,7 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
         }
         else
         {
-            int[] aint = this.genBiomes.getInts(x, z, width, length);
+            int[] aint = this.genBiomes.getInts(x, z, width, length, false);
 
             for (int i = 0; i < width * length; ++i)
             {
@@ -485,24 +580,17 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
      * checks given Chunk's Biomes against List of allowed ones
      */
     @Override
-    public boolean areBiomesViable(int p_76940_1_, int p_76940_2_, int p_76940_3_, List<BiomeGenBase> p_76940_4_)
+    public boolean areBiomesViable(int x, int z, int radius, List<BiomeGenBase> allowed)
     {
         IntCache.resetIntCache();
-        int i = p_76940_1_ - p_76940_3_ >> 2;
-        int j = p_76940_2_ - p_76940_3_ >> 2;
-        int k = p_76940_1_ + p_76940_3_ >> 2;
-        int l = p_76940_2_ + p_76940_3_ >> 2;
-        int i1 = k - i + 1;
-        int j1 = l - j + 1;
-        int[] aint = this.genBiomes.getInts(i, j, i1, j1);
+        Set<Integer> set = Sets.<Integer> newHashSet();
+        Collections.addAll(set, ArrayUtils.toObject(this.genBiomes.getInts(x, z, radius, radius, false)));
 
         try
         {
-            for (int k1 = 0; k1 < i1 * j1; ++k1)
+            for (BiomeGenBase biomegenbase : allowed)
             {
-                BiomeGenBase biomegenbase = BiomeGenBase.getBiome(aint[k1]);
-
-                if (!p_76940_4_.contains(biomegenbase))
+                if (!set.contains(biomegenbase.biomeID))
                 {
                     return false;
                 }
@@ -515,10 +603,41 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Invalid Biome id");
             CrashReportCategory crashreportcategory = crashreport.makeCategory("Manager");
             crashreportcategory.addCrashSection("Manager", this.genBiomes.toString());
-            crashreportcategory.addCrashSection("x", Integer.valueOf(p_76940_1_));
-            crashreportcategory.addCrashSection("z", Integer.valueOf(p_76940_2_));
-            crashreportcategory.addCrashSection("radius", Integer.valueOf(p_76940_3_));
-            crashreportcategory.addCrashSection("allowed", p_76940_4_);
+            crashreportcategory.addCrashSection("x", Integer.valueOf(x));
+            crashreportcategory.addCrashSection("z", Integer.valueOf(z));
+            crashreportcategory.addCrashSection("radius", Integer.valueOf(radius));
+            crashreportcategory.addCrashSection("allowed", allowed);
+            throw new ReportedException(crashreport);
+        }
+    }
+
+    public boolean areViableOceanMonumentBiomes(int x, int z, int radius, List<BiomeGenBase> allowed)
+    {
+        IntCache.resetIntCache();
+        Set<Integer> set = Sets.<Integer> newHashSet();
+        Collections.addAll(set, ArrayUtils.toObject(this.genBiomes.getInts(x, z, radius, radius, true)));
+
+        try
+        {
+            for (BiomeGenBase biomegenbase : allowed)
+            {
+                if (!set.contains(biomegenbase.biomeID))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        catch (Throwable throwable)
+        {
+            CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Invalid Biome id");
+            CrashReportCategory crashreportcategory = crashreport.makeCategory("Manager");
+            crashreportcategory.addCrashSection("Manager", this.genBiomes.toString());
+            crashreportcategory.addCrashSection("x", Integer.valueOf(x));
+            crashreportcategory.addCrashSection("z", Integer.valueOf(z));
+            crashreportcategory.addCrashSection("radius", Integer.valueOf(radius));
+            crashreportcategory.addCrashSection("allowed", allowed);
             throw new ReportedException(crashreport);
         }
     }
@@ -527,27 +646,15 @@ public class ManagerOWG extends WorldChunkManager implements WorldChunkManagerBa
     public BlockPos findBiomePosition(int x, int z, int range, List<BiomeGenBase> biomes, Random random)
     {
         IntCache.resetIntCache();
-        int i = x - range >> 2;
-        int j = z - range >> 2;
-        int k = x + range >> 2;
-        int l = z + range >> 2;
-        int i1 = k - i + 1;
-        int j1 = l - j + 1;
-        int[] aint = this.genBiomes.getInts(i, j, i1, j1);
+        Set<Integer> set = Sets.<Integer> newHashSet();
+        Collections.addAll(set, ArrayUtils.toObject(this.genBiomes.getInts(x, z, range, range, false)));
         BlockPos blockpos = null;
-        int k1 = 0;
 
-        for (int l1 = 0; l1 < i1 * j1; ++l1)
+        for (BiomeGenBase biomegenbase : biomes)
         {
-            int i2 = i + l1 % i1 << 2;
-            int j2 = j + l1 / i1 << 2;
-            BiomeGenBase biomegenbase = BiomeGenBase.getBiome(aint[l1]);
-
-            if (biomes.contains(biomegenbase) && (blockpos == null || random.nextInt(k1 + 1) == 0))
-            {
-                blockpos = new BlockPos(i2, 0, j2);
-                ++k1;
-            }
+            blockpos = set.contains(biomegenbase.biomeID)
+                    ? new BlockPos(x - range + random.nextInt(range * 2 + 1), 0, z - range + random.nextInt(range * 2 + 1))
+                    : null;
         }
 
         return blockpos;

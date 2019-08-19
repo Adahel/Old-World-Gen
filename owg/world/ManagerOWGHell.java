@@ -15,10 +15,10 @@ public class ManagerOWGHell extends ManagerOWG
     /** The rainfall in the world */
     private float rainfall;
 
-    public ManagerOWGHell(BiomeGenBase p_i45374_1_, float p_i45374_2_)
+    public ManagerOWGHell(BiomeGenBase biomeIn, float rainfall)
     {
-        this.biomeGenerator = p_i45374_1_;
-        this.rainfall = p_i45374_2_;
+        this.biomeGenerator = biomeIn;
+        this.rainfall = rainfall;
     }
 
     @Override
@@ -114,8 +114,8 @@ public class ManagerOWGHell extends ManagerOWG
      * checks given Chunk's Biomes against List of allowed ones
      */
     @Override
-    public boolean areBiomesViable(int p_76940_1_, int p_76940_2_, int p_76940_3_, List<BiomeGenBase> p_76940_4_)
+    public boolean areBiomesViable(int x, int z, int radius, List<BiomeGenBase> allowed)
     {
-        return p_76940_4_.contains(this.biomeGenerator);
+        return allowed.contains(this.biomeGenerator);
     }
 }

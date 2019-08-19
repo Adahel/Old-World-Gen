@@ -16,7 +16,7 @@ public class SupportTC
         }
     }
 
-    public static void addTCBiomes()
+    private static void addTCBiomes()
     {
         System.out.println("OWG: Thaumcraft support is loading");
         if (BiomeHandler.biomeMagicalForest != null)

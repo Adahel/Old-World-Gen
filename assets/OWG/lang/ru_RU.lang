@@ -1,0 +1,50 @@
+generator.OWG=Старый мир поколения
+
+gui.title=Настройки генератора Старого Света
+gui.selectGenerator=Выберите генератор мира:
+gui.generatorSettings=Настройки генератора:
+gui.serverConfig=Конфигурация сервера:
+gui.copystring=Скопировать настройки генератора в буфер
+
+owg.setting.size=Размер
+owg.setting.small=Маленький
+owg.setting.default=Обычный
+owg.setting.large=Большой
+owg.setting.snow=Снежный мир
+owg.setting.water=Вода
+owg.setting.on=Вкл.
+owg.setting.off=Откл.
+owg.setting.theme=Тема
+owg.setting.type=Тип
+owg.setting.layer=Слой
+owg.setting.village=деревни
+owg.setting.temple=Храмы
+owg.setting.dungeon=Подземелья
+owg.setting.stronghold=Крепости
+owg.setting.mineshaft=люки
+owg.setting.ravine=Овраги
+owg.setting.monument=Океанские Памятники
+owg.setting.end=Только конечный портал
+
+owg.biomes.biomes=Биомы
+owg.biomes.original=оригинал
+owg.biomes.vanilla=ваниль
+owg.biomes.all=ваниль + Модифика́ция
+
+owg.theme.default=Обычная
+owg.theme.snow=Снежная
+owg.theme.jungle=Джунгли
+owg.theme.tropical=Тропическая
+owg.theme.paradise=Райская
+owg.theme.hell=Адская
+owg.theme.woods=Лесная
+
+owg.type.island=Остров
+owg.type.floating=Летающий
+owg.type.inland=Остров
+
+owg.BETA173=Бета 1.7.3
+owg.ALPHA12=Альфа 1.2.0
+owg.ALPHA11=Альфа 1.1.0
+owg.INFDEV=Infdev
+owg.INDEV=Indev

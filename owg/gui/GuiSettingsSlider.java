@@ -1,5 +1,9 @@
 package owg.gui;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
 public class GuiSettingsSlider extends GuiSettingsButton
 {
     public GuiSettingsSlider(String[] text, int[] values, int def, int buttonID, int posY, int width)

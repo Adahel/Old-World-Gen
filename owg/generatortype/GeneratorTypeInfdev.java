@@ -5,6 +5,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.biome.WorldChunkManagerHell;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import owg.biomes.BiomeList;
 import owg.generator.ChunkGeneratorInfdev;
 import owg.gui.GuiGeneratorSettings;
@@ -19,6 +21,7 @@ public class GeneratorTypeInfdev extends GeneratorType
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public boolean getSettings(GuiGeneratorSettings gui)
     {
         gui.settings.add(new GuiSettingsButton(
@@ -47,6 +50,7 @@ public class GeneratorTypeInfdev extends GeneratorType
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public WorldChunkManager getClientWorldChunkManager(World world)
     {
         return new WorldChunkManagerHell(BiomeList.CLASSICnormal, 0.5F);

@@ -253,6 +253,11 @@ public class ChunkGeneratorIndev implements IChunkProvider
 
     public void generateSurface(int i, int j, ChunkPrimer chunk)
     {
+        if (this.worldObj.getWorldInfo().getSpawnX() != 0)
+        {
+            this.worldObj.getWorldInfo().setSpawn(new BlockPos(0, 256, 0));
+        }
+
         int jj = 0;
 
         for (int x = 0; x < 16; x++)
@@ -525,9 +530,10 @@ public class ChunkGeneratorIndev implements IChunkProvider
         return output;
     }
 
-    public Chunk loadChunk(int i, int j)
+    @Override
+    public Chunk provideChunk(BlockPos blockPosIn)
     {
-        return this.provideChunk(i, j);
+        return this.provideChunk(blockPosIn.getX() >> 4, blockPosIn.getZ() >> 4);
     }
 
     @Override
@@ -838,19 +844,13 @@ public class ChunkGeneratorIndev implements IChunkProvider
     }
 
     @Override
-    public Chunk provideChunk(BlockPos blockPosIn)
-    {
-        return this.provideChunk(blockPosIn.getX() >> 4, blockPosIn.getZ() >> 4);
-    }
-
-    @Override
-    public boolean func_177460_a(IChunkProvider p_177460_1_, Chunk p_177460_2_, int p_177460_3_, int p_177460_4_)
+    public boolean func_177460_a(IChunkProvider ichunkprovider, Chunk chunkIn, int x, int z)
     {
         return false;
     }
 
     @Override
-    public boolean saveChunks(boolean p_73151_1_, IProgressUpdate progressCallback)
+    public boolean saveChunks(boolean flag, IProgressUpdate progressCallback)
     {
         return true;
     }
@@ -882,8 +882,15 @@ public class ChunkGeneratorIndev implements IChunkProvider
     @Override
     public BlockPos getStrongholdGen(World worldIn, String structureName, BlockPos position)
     {
-        return "Stronghold".equals(structureName) && this.strongholdGenerator != null ? this.strongholdGenerator.getClosestStrongholdPos(worldIn, position)
-                : null;
+        if ("Stronghold".equals(structureName) && this.typeFloating && this.dungeons < 2)
+        {
+            return new BlockPos(0, 2, 0);
+        }
+        else
+        {
+            return "Stronghold".equals(structureName) && this.strongholdGenerator != null ? this.strongholdGenerator.getClosestStrongholdPos(worldIn, position)
+                    : null;
+        }
     }
 
     @Override

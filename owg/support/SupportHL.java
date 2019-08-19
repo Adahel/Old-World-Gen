@@ -16,7 +16,7 @@ public class SupportHL
         }
     }
 
-    public static void addHLBiomes()
+    private static void addHLBiomes()
     {
         System.out.println("OWG: Highlands support is loading");
         if (HighlandsBiomes.highlandsBiome != null)
