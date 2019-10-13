@@ -40,12 +40,25 @@ Features:
     12. Start your server.
     
 ## CHANGELOG ##
+    Version 1.0.8 '12-10-2019'
+    - Endless rain on snow worlds (indev, infdev and alpha 1.1)
+    - Changed end sky dungeon spawner to silverfish
+    - Changed end sky dungeon blocks to stone bricks
+    - Fixed structures: villages and ocean monuments
+    - Added a new option in vanilla: deep ocean for ocean monuments
+    - Added new caves option: original caves, vanilla caves
+    - Minor changes in chunk generators
+    - Removed some useless code
+
+    Version 1.0.7 (Private Release) '08-10-2019'
+    - Revised lang files
+
     Version 1.0.6 '31-05-2019'
     - Fixed torches bug from Indev House
     - Added y emulator. Thanks Nicholai
     - Added Deepen Ocean. Thanks Nicholai
     - Added Ocean Monument generator
-    - Added new biomes: Ocean, Beach, Gravel Beach (Biomes O' Plenty only)
+    - Added new biomes: Ocean, Beach, (Gravel Beach (Biomes O' Plenty only))
     - Added new lang files
     - Added support for SugiForest mod
     - Added support for AbyssalCraft mod

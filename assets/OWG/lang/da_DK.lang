@@ -1,6 +1,6 @@
-generator.OWG=Old World Gen
+generator.OWG=Gamle verden Generator
 
-gui.title=Old World Generator Indstillinger
+gui.title=Gamle verden generator indstillinger
 gui.selectGenerator=Vælg en verdens-generator:
 gui.generatorSettings=Generator instillinger:
 gui.serverConfig=Server konfiguration:
@@ -17,14 +17,16 @@ owg.setting.off=AF
 owg.setting.theme=Tema
 owg.setting.type=Type
 owg.setting.layer=Lag
-owg.setting.village=Landsbyer
-owg.setting.temple=Templer
 owg.setting.dungeon=Fangehuller
+owg.setting.cave=huler
 owg.setting.stronghold=Højborge
+owg.setting.village=Landsbyer
 owg.setting.mineshaft=Mineskakter
+owg.setting.temple=Templer
 owg.setting.ravine=Kløfterne
+owg.setting.ocean=Dybt ocean
 owg.setting.monument=Ocean Monumenter
-owg.setting.end=Kun End portal
+owg.setting.end=Kun Slutningen portal
 
 owg.biomes.biomes=Biomes
 owg.biomes.original=Original

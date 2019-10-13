@@ -19,7 +19,9 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.structure.MapGenMineshaft;
 import net.minecraft.world.gen.structure.MapGenStronghold;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.terraingen.InitMapGenEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
+import net.minecraftforge.event.terraingen.TerrainGen;
 import owg.OWGGenHelper;
 import owg.data.DungeonLoot;
 import owg.deco.OldGenBigTree;
@@ -50,8 +52,8 @@ public class ChunkGeneratorInfdev implements IChunkProvider
     public NoiseOctavesInfdev field_920_c;
 
     private World field_907_p;
-    public final int strongholds;
-    public final int mineshafts;
+    private final int strongholds;
+    private final int mineshafts;
     private double field_906_q[];
     private double field_905_r[];
     private double field_904_s[];
@@ -73,6 +75,8 @@ public class ChunkGeneratorInfdev implements IChunkProvider
 
     public ChunkGeneratorInfdev(World world, long l, int infStrongholds, int infMineshafts, boolean a)
     {
+        this.strongholdGenerator = (MapGenStronghold) TerrainGen.getModdedMapGen(this.strongholdGenerator, InitMapGenEvent.EventType.STRONGHOLD);
+        this.mineshaftGenerator = (MapGenMineshaft) TerrainGen.getModdedMapGen(this.mineshaftGenerator, InitMapGenEvent.EventType.MINESHAFT);
         this.field_905_r = new double[256];
         this.field_904_s = new double[256];
         this.field_903_t = new double[256];
@@ -657,7 +661,7 @@ public class ChunkGeneratorInfdev implements IChunkProvider
     }
 
     @Override
-    public boolean func_177460_a(IChunkProvider ichunkprovider, Chunk chunkIn, int x, int z)
+    public boolean func_177460_a(IChunkProvider ichunkprovider, Chunk chunkIn, int i, int j)
     {
         return false;
     }

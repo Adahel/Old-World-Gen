@@ -324,9 +324,9 @@ public class ChunkSimulatorBeta
 
     private boolean landAboveSeaLevel(int[][] list)
     {
-        for (int[] ad : list)
+        for (int[] aint : list)
         {
-            for (int i : ad)
+            for (int i : aint)
             {
                 if (i >= 60)
                 {

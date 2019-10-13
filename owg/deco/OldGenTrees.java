@@ -13,8 +13,6 @@ public class OldGenTrees extends WorldGenerator
 
     public OldGenTrees(int type)
     {
-        super(false);
-
         this.generatortype = type;
     }
 

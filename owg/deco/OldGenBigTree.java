@@ -35,8 +35,6 @@ public class OldGenBigTree extends WorldGenerator
 
     public OldGenBigTree(int type)
     {
-        super(false);
-
         this.field_881_b = new Random();
         this.field_878_e = 0;
         this.field_876_g = 0.61799999999999999D;

@@ -11,9 +11,9 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import owg.biomes.BiomeList;
 import owg.config.ConfigOWG;
+import owg.events.Events;
 import owg.language.OWGLanguage;
 import owg.support.Support;
 import owg.world.WorldTypeOWG;
@@ -23,7 +23,7 @@ public class OWG
 {
     public static final String MODID = "OWG";
     public static final String NAME = "Old World Gen";
-    public static final String VERSION = "1.0.6";
+    public static final String VERSION = "1.0.8";
 
     @Instance(MODID)
     public static OWG instance;
@@ -43,17 +43,20 @@ public class OWG
         metadata.authorList = ImmutableList.of("ted80", "Adahel");
         metadata.credits = "Thanks Nicholai (mrburger) for creating the y emulator and ocean deepen for generate ocean monuments.";
         metadata.logoFile = MODID + ".png";
-        OWGLanguage.init();
 
+        OWGLanguage.init();
         ConfigOWG.init(event);
         BiomeList.init();
     }
 
     @EventHandler
-    @SideOnly(Side.CLIENT)
     public void Init(FMLInitializationEvent event)
     {
-        GuiCreateWorldEvents.registerEvent();
+        if (event.getSide() == Side.CLIENT)
+        {
+            Events.initClient();
+        }
+        Events.init();
     }
 
     @EventHandler

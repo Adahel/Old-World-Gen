@@ -34,7 +34,7 @@ public class ManagerOWGHell extends ManagerOWG
     }
 
     @Override
-    public BiomeGenBase getBiomeGenAt(int x, int z)
+    public BiomeGenBase getBiomeGenAt(int i, int j)
     {
         return this.biomeGenerator;
     }
@@ -52,7 +52,7 @@ public class ManagerOWGHell extends ManagerOWG
      * Returns an array of biomes for the location input.
      */
     @Override
-    public BiomeGenBase[] getBiomesForGeneration(BiomeGenBase[] biomes, int x, int z, int width, int height)
+    public BiomeGenBase[] getBiomesForGeneration(BiomeGenBase[] biomes, int i, int j, int width, int height)
     {
         if (biomes == null || biomes.length < width * height)
         {
@@ -64,10 +64,10 @@ public class ManagerOWGHell extends ManagerOWG
     }
 
     /**
-     * Returns a list of rainfall values for the specified blocks. Args: listToReuse, x, z, width, length.
+     * Returns a list of rainfall values for the specified blocks. Args: listToReuse, i, j, width, length.
      */
     @Override
-    public float[] getRainfall(float[] listToReuse, int x, int z, int width, int length)
+    public float[] getRainfall(float[] listToReuse, int i, int j, int width, int length)
     {
         if (listToReuse == null || listToReuse.length < width * length)
         {
@@ -79,10 +79,10 @@ public class ManagerOWGHell extends ManagerOWG
     }
 
     /**
-     * Returns biomes to use for the blocks and loads the other data like temperature and humidity onto the WorldChunkManager Args: oldBiomeList, x, z, width, depth
+     * Returns biomes to use for the blocks and loads the other data like temperature and humidity onto the WorldChunkManager Args: oldBiomeList, i, j, width, depth
      */
     @Override
-    public BiomeGenBase[] loadBlockGeneratorData(BiomeGenBase[] oldBiomeList, int x, int z, int width, int depth)
+    public BiomeGenBase[] loadBlockGeneratorData(BiomeGenBase[] oldBiomeList, int i, int j, int width, int depth)
     {
         if (oldBiomeList == null || oldBiomeList.length < width * depth)
         {
@@ -94,19 +94,19 @@ public class ManagerOWGHell extends ManagerOWG
     }
 
     /**
-     * Return a list of biomes for the specified blocks. Args: listToReuse, x, y, width, length, cacheFlag (if false, don't check biomeCache to avoid infinite loop in
+     * Return a list of biomes for the specified blocks. Args: listToReuse, i, y, width, length, cacheFlag (if false, don't check biomeCache to avoid infinite loop in
      * BiomeCacheBlock)
      */
     @Override
-    public BiomeGenBase[] getBiomeGenAt(BiomeGenBase[] listToReuse, int x, int z, int width, int length, boolean cacheFlag)
+    public BiomeGenBase[] getBiomeGenAt(BiomeGenBase[] listToReuse, int i, int j, int width, int length, boolean cacheFlag)
     {
-        return this.loadBlockGeneratorData(listToReuse, x, z, width, length);
+        return this.loadBlockGeneratorData(listToReuse, i, j, width, length);
     }
 
     @Override
-    public BlockPos findBiomePosition(int x, int z, int range, List<BiomeGenBase> biomes, Random random)
+    public BlockPos findBiomePosition(int i, int j, int range, List<BiomeGenBase> biomes, Random random)
     {
-        return biomes.contains(this.biomeGenerator) ? new BlockPos(x - range + random.nextInt(range * 2 + 1), 0, z - range + random.nextInt(range * 2 + 1))
+        return biomes.contains(this.biomeGenerator) ? new BlockPos(i - range + random.nextInt(range * 2 + 1), 0, j - range + random.nextInt(range * 2 + 1))
                 : null;
     }
 
@@ -114,7 +114,13 @@ public class ManagerOWGHell extends ManagerOWG
      * checks given Chunk's Biomes against List of allowed ones
      */
     @Override
-    public boolean areBiomesViable(int x, int z, int radius, List<BiomeGenBase> allowed)
+    public boolean areBiomesViable(int i, int j, int radius, List<BiomeGenBase> allowed)
+    {
+        return allowed.contains(this.biomeGenerator);
+    }
+
+    @Override
+    public boolean areViableOceanMonumentBiomes(int i, int j, int radius, List<BiomeGenBase> allowed)
     {
         return allowed.contains(this.biomeGenerator);
     }

@@ -27,12 +27,14 @@ public class OWGLanguage
         LanguageRegistry.instance().addStringLocalization("owg.setting.theme", "Theme");
         LanguageRegistry.instance().addStringLocalization("owg.setting.type", "Type");
         LanguageRegistry.instance().addStringLocalization("owg.setting.layer", "Layer");
-        LanguageRegistry.instance().addStringLocalization("owg.setting.village", "Villages");
-        LanguageRegistry.instance().addStringLocalization("owg.setting.temple", "Temples");
         LanguageRegistry.instance().addStringLocalization("owg.setting.dungeon", "Dungeons");
+        LanguageRegistry.instance().addStringLocalization("owg.setting.cave", "Caves");
         LanguageRegistry.instance().addStringLocalization("owg.setting.stronghold", "Strongholds");
+        LanguageRegistry.instance().addStringLocalization("owg.setting.village", "Villages");
         LanguageRegistry.instance().addStringLocalization("owg.setting.mineshaft", "Mineshafts");
+        LanguageRegistry.instance().addStringLocalization("owg.setting.temple", "Temples");
         LanguageRegistry.instance().addStringLocalization("owg.setting.ravine", "Ravines");
+        LanguageRegistry.instance().addStringLocalization("owg.setting.ocean", "Deep ocean");
         LanguageRegistry.instance().addStringLocalization("owg.setting.monument", "Ocean Monuments");
         LanguageRegistry.instance().addStringLocalization("owg.setting.end", "End portal only");
 

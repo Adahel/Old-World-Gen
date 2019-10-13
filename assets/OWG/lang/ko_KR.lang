@@ -17,12 +17,14 @@ owg.setting.off=떨어져서
 owg.setting.theme=주제
 owg.setting.type=타입
 owg.setting.layer=레이어
-owg.setting.village=마을
-owg.setting.temple=사원
 owg.setting.dungeon=지하 감옥
+owg.setting.cave=동굴
 owg.setting.stronghold=포르 탈 레자
+owg.setting.village=마을
 owg.setting.mineshaft=광산
+owg.setting.temple=사원
 owg.setting.ravine=협곡
+owg.setting.ocean=심해
 owg.setting.monument=오션 기념물
 owg.setting.end=최종 포털 만
 

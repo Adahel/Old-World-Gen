@@ -16,7 +16,7 @@ public class GuiSettingsButton
 
     public GuiSettingsButton(String[] text, int[] values, int buttonID, int posY, int width)
     {
-        this(new GuiButton(buttonID, width / 2 + 5, posY, 150, 20, text[0]), text, values, buttonID, -1, new int[0]);
+        this(text, values, buttonID, posY, width, -1, new int[0]);
     }
 
     public GuiSettingsButton(String[] text, int[] values, int buttonID, int posY, int width, int dep, int[] vel)

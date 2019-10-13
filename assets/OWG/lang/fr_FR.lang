@@ -2,7 +2,7 @@ generator.OWG=Vieux Générateur du monde
 
 gui.title=Vieux Générateur du monde Paramètres
 gui.selectGenerator=Choisir un générateur de monde:
-gui.generatorConfiguration avancée:
+gui.generator=Configuration avancée:
 gui.serverConfig=Configuration du serveur:
 gui.copystring=Copier les options dans le presse-papiers
 
@@ -17,12 +17,14 @@ owg.setting.off=DE
 owg.setting.theme=Thème
 owg.setting.type=Type
 owg.setting.layer=Couche
-owg.setting.village=Villages
-owg.setting.temple=Temples
 owg.setting.dungeon=Donjons
+owg.setting.cave=Grottes
 owg.setting.stronghold=Forteresses
-owg.setting.mineshaft=Puits de Mine
+owg.setting.village=Villages
+owg.setting.mineshaft=Puits de mines
+owg.setting.temple=Temples
 owg.setting.ravine=Ravins
+owg.setting.ocean=Océan profond
 owg.setting.monument=Monuments de l'océan
 owg.setting.end=Portail final seulement
 

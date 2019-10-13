@@ -1,6 +1,5 @@
 package owg.generatortype;
 
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.WorldChunkManager;
@@ -11,6 +10,7 @@ import owg.biomes.BiomeList;
 import owg.generator.ChunkGeneratorBeta;
 import owg.gui.GuiGeneratorSettings;
 import owg.gui.GuiSettingsButton;
+import owg.gui.GuiSettingsCheckBox;
 import owg.world.ManagerOWG;
 import owg.world.ManagerOWGHell;;
 
@@ -30,30 +30,31 @@ public class GeneratorTypeBeta extends GeneratorType
                         StatCollector.translateToLocal("owg.biomes.biomes") + ": " + StatCollector.translateToLocal("owg.biomes.vanilla"),
                         StatCollector.translateToLocal("owg.biomes.biomes") + ": " + StatCollector.translateToLocal("owg.biomes.all") },
                 new int[] { 0, 1, 2 }, 20, 50, gui.width));
+        gui.settings.add(new GuiSettingsCheckBox(
+                new String[] { StatCollector.translateToLocal("owg.setting.stronghold"), StatCollector.translateToLocal("owg.setting.stronghold") }, 21, 70,
+                gui.width, true));
+        gui.settings.add(new GuiSettingsCheckBox(
+                new String[] { StatCollector.translateToLocal("owg.setting.mineshaft"), StatCollector.translateToLocal("owg.setting.mineshaft") }, 22, 80,
+                gui.width, true));
         gui.settings.add(new GuiSettingsButton(
-                new String[] { StatCollector.translateToLocal("owg.setting.stronghold") + ": " + StatCollector.translateToLocal("owg.setting.on"),
-                        StatCollector.translateToLocal("owg.setting.stronghold") + ": " + StatCollector.translateToLocal("owg.setting.off") },
-                new int[] { 0, 1 }, 21, 70, gui.width));
-        gui.settings.add(new GuiSettingsButton(
-                new String[] { StatCollector.translateToLocal("owg.setting.mineshaft") + ": " + StatCollector.translateToLocal("owg.setting.on"),
-                        StatCollector.translateToLocal("owg.setting.mineshaft") + ": " + StatCollector.translateToLocal("owg.setting.off") },
-                new int[] { 0, 1 }, 22, 90, gui.width));
-        String[] villages = new String[] { StatCollector.translateToLocal("owg.setting.village") + ": " + StatCollector.translateToLocal("owg.setting.on"),
-                StatCollector.translateToLocal("owg.setting.village") + ": " + StatCollector.translateToLocal("owg.setting.off") };
-        gui.settings.add(new GuiSettingsButton(new GuiButton(23, gui.width / 2 + 5, 110, 75, 20, villages[0]), villages, new int[] { 0, 1 }, 23, 20,
-                new int[] { 1, 2 }));
-        String[] temples = new String[] { StatCollector.translateToLocal("owg.setting.temple") + ": " + StatCollector.translateToLocal("owg.setting.on"),
-                StatCollector.translateToLocal("owg.setting.temple") + ": " + StatCollector.translateToLocal("owg.setting.off") };
-        gui.settings.add(
-                new GuiSettingsButton(new GuiButton(24, gui.width / 2 + 81, 110, 75, 20, temples[0]), temples, new int[] { 0, 1 }, 24, 20, new int[] { 1, 2 }));
-        gui.settings.add(new GuiSettingsButton(
-                new String[] { StatCollector.translateToLocal("owg.setting.ravine") + ": " + StatCollector.translateToLocal("owg.setting.on"),
-                        StatCollector.translateToLocal("owg.setting.ravine") + ": " + StatCollector.translateToLocal("owg.setting.off") },
-                new int[] { 0, 1 }, 25, 130, gui.width, 20, new int[] { 1, 2 }));
-        gui.settings.add(new GuiSettingsButton(
-                new String[] { StatCollector.translateToLocal("owg.setting.monument") + ": " + StatCollector.translateToLocal("owg.setting.on"),
-                        StatCollector.translateToLocal("owg.setting.monument") + ": " + StatCollector.translateToLocal("owg.setting.off") },
-                new int[] { 0, 1 }, 26, 150, gui.width, 20, new int[] { 1, 2 }));
+                new String[] { StatCollector.translateToLocal("owg.setting.cave") + ": " + StatCollector.translateToLocal("owg.biomes.vanilla"),
+                        StatCollector.translateToLocal("owg.setting.cave") + ": " + StatCollector.translateToLocal("owg.biomes.original") },
+                new int[] { 0, 1 }, 23, 90, gui.width, 20, new int[] { 1, 2 }));
+        gui.settings.add(new GuiSettingsCheckBox(
+                new String[] { StatCollector.translateToLocal("owg.setting.village"), StatCollector.translateToLocal("owg.setting.village") }, 24, 110,
+                gui.width, true, 20, new int[] { 1, 2 }));
+        gui.settings.add(new GuiSettingsCheckBox(
+                new String[] { StatCollector.translateToLocal("owg.setting.temple"), StatCollector.translateToLocal("owg.setting.temple") }, 25, 120, gui.width,
+                true, 20, new int[] { 1, 2 }));
+        gui.settings.add(new GuiSettingsCheckBox(
+                new String[] { StatCollector.translateToLocal("owg.setting.ravine"), StatCollector.translateToLocal("owg.setting.ravine") }, 26, 130, gui.width,
+                true, 20, new int[] { 1, 2 }));
+        gui.settings.add(new GuiSettingsCheckBox(
+                new String[] { StatCollector.translateToLocal("owg.setting.ocean"), StatCollector.translateToLocal("owg.setting.ocean") }, 27, 140, gui.width,
+                true, 20, new int[] { 1, 2 }));
+        gui.settings.add(new GuiSettingsCheckBox(
+                new String[] { StatCollector.translateToLocal("owg.setting.monument"), StatCollector.translateToLocal("owg.setting.monument") }, 28, 150,
+                gui.width, true, 27, new int[] { 0 }));
         return true;
     }
 
@@ -77,10 +78,12 @@ public class GeneratorTypeBeta extends GeneratorType
         int biomes = trySetting(0, 2);
         int strongholds = trySetting(1, 1);
         int mineshafts = trySetting(2, 1);
-        int villages = trySetting(3, 1);
-        int temples = trySetting(4, 1);
-        int ravines = trySetting(5, 1);
-        int monuments = trySetting(6, 1);
-        return new ChunkGeneratorBeta(world, world.getSeed(), biomes, strongholds, mineshafts, villages, temples, ravines, monuments);
+        int caves = trySetting(3, 1);
+        int villages = trySetting(4, 1);
+        int temples = trySetting(5, 1);
+        int ravines = trySetting(6, 1);
+        int ocean = trySetting(7, 1);
+        int monuments = trySetting(8, 1);
+        return new ChunkGeneratorBeta(world, world.getSeed(), biomes, strongholds, mineshafts, caves, villages, temples, ravines, ocean, monuments);
     }
 }

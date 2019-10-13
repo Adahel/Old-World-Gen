@@ -1,6 +1,6 @@
-generator.OWG=Old World Gen
+generator.OWG=Alte Welt Generator
 
-gui.title=Old World Generator Einstellungen
+gui.title=Alte Welt Generator Einstellungen
 gui.selectGenerator=Weltgenerator auswählen:
 gui.generatorSettings=Generatoreinstellungen:
 gui.serverConfig=Serverkonfiguration:
@@ -8,35 +8,37 @@ gui.copystring=Generatoreinstellungen in die Zwischenablage kopieren
 
 owg.setting.size=Größe
 owg.setting.small=Klein
-owg.setting.default=Normal
-owg.setting.large=Normal
+owg.setting.default=Standard
+owg.setting.large=Groß
 owg.setting.snow=Schneewelt
-owg.setting.water=Water
-owg.setting.on=AN
+owg.setting.water=Wasser
+owg.setting.on=AUF
 owg.setting.off=AUS
 owg.setting.theme=Thema
 owg.setting.type=Typ
 owg.setting.layer=Ebenen
-owg.setting.village=Dörfer
-owg.setting.temple=Tempel
 owg.setting.dungeon=Verlies
+owg.setting.cave=Höhlen
 owg.setting.stronghold=Hochburg
+owg.setting.village=Dörfer
 owg.setting.mineshaft=Minenschächte
+owg.setting.temple=Tempel
 owg.setting.ravine=Schluchten
-owg.setting.monument=Ozean-Denkmäler
-owg.setting.end=End-portal nur
+owg.setting.ocean=Tiefer ozean
+owg.setting.monument=Ozean-denkmäler
+owg.setting.end=Nur ende portal
 
 owg.biomes.biomes=Biomes
 owg.biomes.original=Original
 owg.biomes.vanilla=Vanille
-owg.biomes.all=Vanille + Änderung
+owg.biomes.all=Vanille + Änderungen
 
 owg.theme.default=Standard
 owg.theme.snow=Schnee
 owg.theme.jungle=Tropen
 owg.theme.tropical=Tropisch
 owg.theme.paradise=Paradies
-owg.theme.hell=Wälder
+owg.theme.hell=Hölle
 owg.theme.woods=Wälder
 
 owg.type.island=Insel

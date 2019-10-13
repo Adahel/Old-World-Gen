@@ -18,12 +18,6 @@ import owg.OWGGenHelper;
 
 public class OldGenTaiga1 extends WorldGenerator
 {
-
-    public OldGenTaiga1()
-    {
-        super(false);
-    }
-
     @Override
     public boolean generate(World world, Random random, int i, int j, int k)
     {

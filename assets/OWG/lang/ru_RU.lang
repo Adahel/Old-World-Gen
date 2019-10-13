@@ -17,12 +17,14 @@ owg.setting.off=Откл.
 owg.setting.theme=Тема
 owg.setting.type=Тип
 owg.setting.layer=Слой
-owg.setting.village=деревни
-owg.setting.temple=Храмы
 owg.setting.dungeon=Подземелья
+owg.setting.cave=Пещеры
 owg.setting.stronghold=Крепости
-owg.setting.mineshaft=люки
+owg.setting.village=деревни
+owg.setting.mineshaft=Шахты
+owg.setting.temple=Храмы
 owg.setting.ravine=Овраги
+owg.setting.ocean=Глубокий океан
 owg.setting.monument=Океанские Памятники
 owg.setting.end=Только конечный портал
 

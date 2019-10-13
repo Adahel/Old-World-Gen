@@ -1,24 +1,19 @@
-package owg;
+package owg.events;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiCreateWorld;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import owg.OWG;
 
 @SideOnly(Side.CLIENT)
 public class GuiCreateWorldEvents
 {
-    public static void registerEvent()
-    {
-        MinecraftForge.EVENT_BUS.register(new GuiCreateWorldEvents());
-    }
-
     @SubscribeEvent
     public void initGui(InitGuiEvent.Post event)
     {

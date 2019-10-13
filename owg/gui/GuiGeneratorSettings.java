@@ -177,7 +177,8 @@ public class GuiGeneratorSettings extends GuiScreen
                 this.settings.get(i).button.visible = false;
                 for (int depvalue : this.settings.get(i).depvalues)
                 {
-                    if (this.settings.get(this.settings.get(i).dependencie - 20).selected == depvalue)
+                    if (this.settings.get(this.settings.get(i).dependencie - 20).button.visible
+                            && this.settings.get(this.settings.get(i).dependencie - 20).selected == depvalue)
                     {
                         this.settings.get(i).button.visible = true;
                     }

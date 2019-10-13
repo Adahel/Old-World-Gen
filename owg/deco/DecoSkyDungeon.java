@@ -2,7 +2,10 @@ package owg.deco;
 
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockEndPortalFrame;
+import net.minecraft.block.BlockSilverfish;
+import net.minecraft.block.BlockStoneBrick;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -16,10 +19,14 @@ import owg.data.DungeonLoot;
 public class DecoSkyDungeon extends WorldGenerator
 {
     public boolean isEndDungeon = false;
+    private final Block stone;
+    private final IBlockState mossy_stone;
 
     public DecoSkyDungeon(boolean end)
     {
         this.isEndDungeon = end;
+        this.stone = end ? Blocks.stonebrick : Blocks.cobblestone;
+        this.mossy_stone = end ? Blocks.stonebrick.getStateFromMeta(BlockStoneBrick.EnumType.MOSSY.getMetadata()) : Blocks.mossy_cobblestone.getDefaultState();
     }
 
     @Override
@@ -100,10 +107,10 @@ public class DecoSkyDungeon extends WorldGenerator
             OWGGenHelper.setBlockWithNotify(worldIn, i - 4, chy4, k - 4, Blocks.iron_bars);
         }
 
-        OWGGenHelper.setBlockWithNotify(worldIn, i + 4, j + 6, k + 4, Blocks.mossy_cobblestone);
-        OWGGenHelper.setBlockWithNotify(worldIn, i + 4, j + 6, k - 4, Blocks.mossy_cobblestone);
-        OWGGenHelper.setBlockWithNotify(worldIn, i - 4, j + 6, k + 4, Blocks.mossy_cobblestone);
-        OWGGenHelper.setBlockWithNotify(worldIn, i - 4, j + 6, k - 4, Blocks.mossy_cobblestone);
+        OWGGenHelper.setBlockState(worldIn, i + 4, j + 6, k + 4, this.mossy_stone);
+        OWGGenHelper.setBlockState(worldIn, i + 4, j + 6, k - 4, this.mossy_stone);
+        OWGGenHelper.setBlockState(worldIn, i - 4, j + 6, k + 4, this.mossy_stone);
+        OWGGenHelper.setBlockState(worldIn, i - 4, j + 6, k - 4, this.mossy_stone);
 
         // Build SkyDungeon
         for (int x1 = i - 4; x1 < i + 5; x1++)
@@ -120,11 +127,19 @@ public class DecoSkyDungeon extends WorldGenerator
                     {
                         if (rand.nextInt(2) != 0)
                         {
-                            OWGGenHelper.setBlockWithNotify(worldIn, x1, y1, z1, Blocks.mossy_cobblestone);
+                            OWGGenHelper.setBlockState(worldIn, x1, y1, z1, this.mossy_stone);
                         }
                         else
                         {
-                            OWGGenHelper.setBlockWithNotify(worldIn, x1, y1, z1, Blocks.cobblestone);
+                            if (this.isEndDungeon && rand.nextFloat() < 0.55F)
+                            {
+                                OWGGenHelper.setBlockState(worldIn, x1, y1, z1,
+                                        Blocks.monster_egg.getStateFromMeta(BlockSilverfish.EnumType.STONEBRICK.getMetadata()));
+                            }
+                            else
+                            {
+                                OWGGenHelper.setBlockWithNotify(worldIn, x1, y1, z1, this.stone);
+                            }
                         }
                     }
                 }
@@ -183,7 +198,7 @@ public class DecoSkyDungeon extends WorldGenerator
             TileEntityMobSpawner spawn3 = (TileEntityMobSpawner) OWGGenHelper.getBlockTileEntity(worldIn, i, j + 6, k);
             if (spawn3 != null)
             {
-                spawn3.getSpawnerBaseLogic().setEntityName(this.pickMobSpawner(rand));
+                spawn3.getSpawnerBaseLogic().setEntityName("Silverfish");
             }
         }
         else

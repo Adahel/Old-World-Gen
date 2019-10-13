@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import owg.biomes.BiomeList;
 import owg.generator.ChunkGeneratorInfdev;
 import owg.gui.GuiGeneratorSettings;
-import owg.gui.GuiSettingsButton;
+import owg.gui.GuiSettingsCheckBox;
 import owg.world.ManagerOWGHell;
 
 public class GeneratorTypeAlpha11 extends GeneratorType
@@ -23,18 +23,15 @@ public class GeneratorTypeAlpha11 extends GeneratorType
     @SideOnly(Side.CLIENT)
     public boolean getSettings(GuiGeneratorSettings gui)
     {
-        gui.settings.add(new GuiSettingsButton(
-                new String[] { StatCollector.translateToLocal("owg.setting.snow") + ": " + StatCollector.translateToLocal("owg.setting.off"),
-                        StatCollector.translateToLocal("owg.setting.snow") + ": " + StatCollector.translateToLocal("owg.setting.on") },
-                new int[] { 0, 1 }, 20, 50, gui.width));
-        gui.settings.add(new GuiSettingsButton(
-                new String[] { StatCollector.translateToLocal("owg.setting.stronghold") + ": " + StatCollector.translateToLocal("owg.setting.on"),
-                        StatCollector.translateToLocal("owg.setting.stronghold") + ": " + StatCollector.translateToLocal("owg.setting.off") },
-                new int[] { 0, 1 }, 21, 70, gui.width));
-        gui.settings.add(new GuiSettingsButton(
-                new String[] { StatCollector.translateToLocal("owg.setting.mineshaft") + ": " + StatCollector.translateToLocal("owg.setting.on"),
-                        StatCollector.translateToLocal("owg.setting.mineshaft") + ": " + StatCollector.translateToLocal("owg.setting.off") },
-                new int[] { 0, 1 }, 22, 90, gui.width));
+        gui.settings.add(new GuiSettingsCheckBox(
+                new String[] { StatCollector.translateToLocal("owg.setting.snow"), StatCollector.translateToLocal("owg.setting.snow") }, 20, 50, gui.width,
+                false));
+        gui.settings.add(new GuiSettingsCheckBox(
+                new String[] { StatCollector.translateToLocal("owg.setting.stronghold"), StatCollector.translateToLocal("owg.setting.stronghold") }, 21, 60,
+                gui.width, true));
+        gui.settings.add(new GuiSettingsCheckBox(
+                new String[] { StatCollector.translateToLocal("owg.setting.mineshaft"), StatCollector.translateToLocal("owg.setting.mineshaft") }, 22, 70,
+                gui.width, true));
         return true;
     }
 

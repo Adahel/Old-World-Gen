@@ -27,7 +27,7 @@ public class BiomeBeta extends BiomeList
         super(id);
         this.id = i;
 
-        if (this.id == 0 || this.id == 0)
+        if (this.id == 0)
         {
             this.spawnableMonsterList.add(new SpawnListEntry(EntityOcelot.class, 2, 1, 1));
         }
@@ -115,7 +115,7 @@ public class BiomeBeta extends BiomeList
         }
         else
         {
-            double d = MathHelper.clamp_float(this.getFTemp(pos.getX(), pos.getY(), pos.getZ()), 0.0F, 1.0F);
+            double d = MathHelper.clamp_float(this.getFloatTemperature(pos), 0.0F, 1.0F);
             double d1 = MathHelper.clamp_float(this.getFloatRainfall(), 0.0F, 1.0F);
             return ColorizerGrass.getGrassColor(d, d1);
         }
@@ -135,24 +135,9 @@ public class BiomeBeta extends BiomeList
         }
         else
         {
-            double d = MathHelper.clamp_float(this.getFTemp(pos.getX(), pos.getY(), pos.getZ()), 0.0F, 1.0F);
+            double d = MathHelper.clamp_float(this.getFloatTemperature(pos), 0.0F, 1.0F);
             double d1 = MathHelper.clamp_float(this.getFloatRainfall(), 0.0F, 1.0F);
             return ColorizerFoliage.getFoliageColor(d, d1);
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    public float getFTemp(int i, int j, int k)
-    {
-        if (j > 64)
-        {
-            float var4 = (float) temperatureNoise.func_151601_a((double) i * 1.0D / 8.0D,
-                    (double) k * 1.0D / 8.0D) * 4.0F;
-            return this.temperature - (var4 + (float) j - 64.0F) * 0.05F / 30.0F;
-        }
-        else
-        {
-            return this.temperature;
         }
     }
 }

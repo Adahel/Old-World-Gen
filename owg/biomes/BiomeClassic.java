@@ -4,7 +4,6 @@ import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.StatCollector;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -35,11 +34,11 @@ public class BiomeClassic extends BiomeList
     @Override
     public BiomeList createMutatedBiome(int id)
     {
-        BiomeClassic biomeClassic = new BiomeClassic(id);
-        biomeClassic.setBiomeName(StatCollector.translateToLocal("owg_Classic_Snow"));
-        biomeClassic.setColor(353825);
-        biomeClassic.setEnableSnow();
-        biomeClassic.setTemperatureRainfall(0.0F, 0.5F);
-        return biomeClassic;
+        BiomeClassic biomeclassic = new BiomeClassic(id);
+        biomeclassic.setBiomeName("owg_Classic_Snow");
+        biomeclassic.setColor(353825);
+        biomeclassic.setEnableSnow();
+        biomeclassic.setTemperatureRainfall(0.0F, 0.5F);
+        return biomeclassic;
     }
 }

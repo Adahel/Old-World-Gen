@@ -5,7 +5,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
-import net.minecraft.block.BlockFlower;
+import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
@@ -19,21 +19,22 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.GeneratorBushFeature;
-import net.minecraft.world.gen.MapGenBase;
-import net.minecraft.world.gen.MapGenCaves;
-import net.minecraft.world.gen.feature.WorldGenFlowers;
 import net.minecraft.world.gen.feature.WorldGenTrees;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraft.world.gen.structure.MapGenMineshaft;
 import net.minecraft.world.gen.structure.MapGenStronghold;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.terraingen.InitMapGenEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
+import net.minecraftforge.event.terraingen.TerrainGen;
 import owg.data.DungeonLoot;
 import owg.deco.DecoIndevHouse;
 import owg.deco.DecoSkyDungeon;
 import owg.deco.OldGenDungeons;
+import owg.deco.OldGenFlowers;
 import owg.deco.OldGenMinable;
+import owg.map.MapGenOLD;
+import owg.map.MapGenOLDCaves;
 import owg.noise.NoiseOctavesIndev;
 import owg.noise.NoiseOctavesInfdev;
 import owg.noise.NoisePerlinIndev;
@@ -54,9 +55,9 @@ public class ChunkGeneratorIndev implements IChunkProvider
     public NoisePerlinIndev perlinGen1;
 
     private World worldObj;
-    public final int strongholds;
-    public final int mineshafts;
-    private MapGenBase caveGenerator = new MapGenCaves();
+    private final int strongholds;
+    private final int mineshafts;
+    private MapGenOLD caveGenerator;
     private MapGenStronghold strongholdGenerator = new MapGenStronghold();
     private MapGenMineshaft mineshaftGenerator = new MapGenMineshaft();
     private BiomeGenBase[] biomesForGeneration;
@@ -74,8 +75,11 @@ public class ChunkGeneratorIndev implements IChunkProvider
     private int dungeonRate = 15;
     private final ManagerOWGHell chunkManager;
 
-    public ChunkGeneratorIndev(World worldIn, long l, int type, int theme, int devStrongholds, int devMineshafts, int dungeons, int layers, int size)
+    public ChunkGeneratorIndev(World worldIn, long l, int type, int theme, int devStrongholds, int devMineshafts, int dungeons, int size, int layers)
     {
+        this.strongholdGenerator = (MapGenStronghold) TerrainGen.getModdedMapGen(this.strongholdGenerator, InitMapGenEvent.EventType.STRONGHOLD);
+        this.mineshaftGenerator = (MapGenMineshaft) TerrainGen.getModdedMapGen(this.mineshaftGenerator, InitMapGenEvent.EventType.MINESHAFT);
+        this.caveGenerator = new MapGenOLDCaves();
         this.worldObj = worldIn;
         this.worldObj.getWorldInfo().setSpawn(new BlockPos(0, 256, 0));
 
@@ -253,11 +257,6 @@ public class ChunkGeneratorIndev implements IChunkProvider
 
     public void generateSurface(int i, int j, ChunkPrimer chunk)
     {
-        if (this.worldObj.getWorldInfo().getSpawnX() != 0)
-        {
-            this.worldObj.getWorldInfo().setSpawn(new BlockPos(0, 256, 0));
-        }
-
         int jj = 0;
 
         for (int x = 0; x < 16; x++)
@@ -555,7 +554,7 @@ public class ChunkGeneratorIndev implements IChunkProvider
 
         if (!this.typeFloating)
         {
-            this.caveGenerator.generate(this, this.worldObj, cx, cy, var3);
+            this.caveGenerator.generate(this.worldObj, cx, cy, var3);
 
             if (this.mineshafts == 0)
             {
@@ -620,8 +619,6 @@ public class ChunkGeneratorIndev implements IChunkProvider
             int ix = this.worldObj.getWorldInfo().getSpawnX();
             int iz = this.worldObj.getWorldInfo().getSpawnZ();
             int iy = this.worldObj.getTopSolidOrLiquidBlock(new BlockPos(ix, 0, iz)).getY();
-            iy = iy < 60 ? 60 : iy;
-
             (new DecoIndevHouse(this.themeHELL ? 2 : 1)).generate(this.worldObj, this.rand, ix, iy, iz);
         }
 
@@ -743,7 +740,8 @@ public class ChunkGeneratorIndev implements IChunkProvider
         {
             l333 += 1;
         }
-        Object obj = new WorldGenTrees(false, 5, Blocks.log.getDefaultState(), Blocks.leaves.getDefaultState(), false);
+        Object obj = new WorldGenTrees(false, 5, Blocks.log.getStateFromMeta(BlockPlanks.EnumType.OAK.getMetadata()),
+                Blocks.leaves.getStateFromMeta(BlockPlanks.EnumType.OAK.getMetadata()), false);
         for (int k88 = 0; k88 < l333; k88++)
         {
             int j133 = var4 + this.rand.nextInt(16) + 8;
@@ -765,15 +763,14 @@ public class ChunkGeneratorIndev implements IChunkProvider
                 int k14 = var4 + this.rand.nextInt(16) + 8;
                 int l16 = this.rand.nextInt(extraheight);
                 int k19 = var5 + this.rand.nextInt(16) + 8;
-                (new WorldGenFlowers(Blocks.yellow_flower, BlockFlower.EnumFlowerType.DANDELION)).generate(this.worldObj, this.rand,
-                        new BlockPos(k14, l16, k19));
+                (new OldGenFlowers(Blocks.yellow_flower)).generate(this.worldObj, this.rand, k14, l16, k19);
             }
             if (this.rand.nextInt(2 / extradeco) == 0)
             {
                 int j15 = var4 + this.rand.nextInt(16) + 8;
                 int j17 = this.rand.nextInt(extraheight);
                 int j20 = var5 + this.rand.nextInt(16) + 8;
-                (new WorldGenFlowers(Blocks.red_flower, BlockFlower.EnumFlowerType.POPPY)).generate(this.worldObj, this.rand, new BlockPos(j15, j17, j20));
+                (new OldGenFlowers(Blocks.red_flower)).generate(this.worldObj, this.rand, j15, j17, j20);
             }
         }
 
@@ -783,14 +780,14 @@ public class ChunkGeneratorIndev implements IChunkProvider
             int k15 = var4 + this.rand.nextInt(16) + 8;
             int k17 = this.rand.nextInt(extraheight);
             int k20 = var5 + this.rand.nextInt(16) + 8;
-            (new GeneratorBushFeature(Blocks.brown_mushroom)).generate(this.worldObj, this.rand, new BlockPos(k15, k17, k20));
+            (new OldGenFlowers(Blocks.brown_mushroom)).generate(this.worldObj, this.rand, k15, k17, k20);
 
             if (this.rand.nextInt(2 / extradeco) == 0)
             {
                 int l15 = var4 + this.rand.nextInt(16) + 8;
                 int l17 = this.rand.nextInt(extraheight);
                 int l20 = var5 + this.rand.nextInt(16) + 8;
-                (new GeneratorBushFeature(Blocks.red_mushroom)).generate(this.worldObj, this.rand, new BlockPos(l15, l17, l20));
+                (new OldGenFlowers(Blocks.red_mushroom)).generate(this.worldObj, this.rand, l15, l17, l20);
             }
         }
         else
@@ -800,14 +797,14 @@ public class ChunkGeneratorIndev implements IChunkProvider
                 int k15 = var4 + this.rand.nextInt(16) + 8;
                 int k17 = this.rand.nextInt(extraheight);
                 int k20 = var5 + this.rand.nextInt(16) + 8;
-                (new GeneratorBushFeature(Blocks.brown_mushroom)).generate(this.worldObj, this.rand, new BlockPos(k15, k17, k20));
+                (new OldGenFlowers(Blocks.brown_mushroom)).generate(this.worldObj, this.rand, k15, k17, k20);
             }
             if (this.rand.nextInt(8 / extradeco) == 0)
             {
                 int l15 = var4 + this.rand.nextInt(16) + 8;
                 int l17 = this.rand.nextInt(extraheight);
                 int l20 = var5 + this.rand.nextInt(16) + 8;
-                (new GeneratorBushFeature(Blocks.red_mushroom)).generate(this.worldObj, this.rand, new BlockPos(l15, l17, l20));
+                (new OldGenFlowers(Blocks.red_mushroom)).generate(this.worldObj, this.rand, l15, l17, l20);
             }
         }
 
@@ -844,7 +841,7 @@ public class ChunkGeneratorIndev implements IChunkProvider
     }
 
     @Override
-    public boolean func_177460_a(IChunkProvider ichunkprovider, Chunk chunkIn, int x, int z)
+    public boolean func_177460_a(IChunkProvider ichunkprovider, Chunk chunkIn, int i, int j)
     {
         return false;
     }
